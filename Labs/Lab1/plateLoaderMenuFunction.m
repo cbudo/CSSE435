@@ -102,10 +102,43 @@ function status(s)
 end
 %% Simply moves from Loc 1 to 5 and back
 function special(s)
+    fprintf(s,'GRIPPER OPEN\n');
+    fprintf(getResponse(s));
     fprintf(s,'X-AXIS 1\n');
+    fprintf(getResponse(s));
+    fprintf(s,'Z-AXIS EXTEND\n');
+    fprintf(getResponse(s));
+    fprintf(s,'GRIPPER CLOSE\n');
+    fprintf(getResponse(s));
+    fprintf(s,'Z-AXIS RETRACT\n');
     fprintf(getResponse(s));
     fprintf(s,'X-AXIS 5\n');
     fprintf(getResponse(s));
-    fprintf(s,'X-AXIS 1\n');
-    fprintf(getResponse(s));    
+    fprintf(s,'Z-AXIS EXTEND\n');
+    fprintf(getResponse(s));
+    fprintf(s,'GRIPPER OPEN\n');
+    fprintf(getResponse(s));
+    fprintf(s,'Z-AXIS RETRACT\n');
+    fprintf(getResponse(s));
+    fprintf(s,'GRIPPER CLOSE\n');
+    fprintf(getResponse(s));
+    fprintf(s,'X-AXIS 4\n');
+    fprintf(getResponse(s));
+    fprintf(s,'GRIPPER OPEN\n');
+    fprintf(getResponse(s));
+    fprintf(s,'Z-AXIS EXTEND\n');
+    fprintf(getResponse(s));
+    fprintf(s,'GRIPPER CLOSE\n');
+    fprintf(getResponse(s));
+    fprintf(s,'Z-AXIS RETRACT\n');
+    fprintf(getResponse(s));
+    fprintf(s,'X-AXIS 2\n');
+    fprintf(getResponse(s));
+    fprintf(s,'Z-AXIS EXTEND\n');
+    fprintf(getResponse(s));
+    fprintf(s,'GRIPPER OPEN\n');
+    fprintf(getResponse(s));
+    fprintf(s,'Z-AXIS RETRACT\n');
+    fprintf(getResponse(s));
+    fprintf(s,'GRIPPER CLOSE\n');
 end
