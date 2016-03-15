@@ -15,6 +15,10 @@ function plateLoaderMenuFunction( num )
                 gripper(s)
             case 5
                 move(s)
+            case 6
+                status(s)
+            case 7
+                special(s)
             otherwise
                 break;
         end
@@ -91,4 +95,17 @@ function move(s)
     fprintf(s, moveCmd);
     fprintf(getResponse(s));
 end
-    
+%% Prints the loader status. 
+function status(s)
+    fprintf(s,'LOADER_STATUS');
+    fprintf(getResponse(s));
+end
+%% Simply moves from Loc 1 to 5 and back
+function special(s)
+    fprintf(s,'X-AXIS 1\n');
+    fprintf(getResponse(s));
+    fprintf(s,'X-AXIS 5\n');
+    fprintf(getResponse(s));
+    fprintf(s,'X-AXIS 1\n');
+    fprintf(getResponse(s));    
+end
