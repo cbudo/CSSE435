@@ -22,7 +22,7 @@ function varargout = PlateLoaderGUI(varargin)
 
 % Edit the above text to modify the response to help PlateLoaderGUI
 
-% Last Modified by GUIDE v2.5 17-Mar-2016 00:18:06
+% Last Modified by GUIDE v2.5 17-Mar-2016 00:43:19
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -215,3 +215,77 @@ function checkbox_simulator_Callback(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 
 % Hint: get(hObject,'Value') returns toggle state of checkbox_simulator
+
+
+% --- Executes on button press in pushbutton_special_a.
+function pushbutton_special_a_Callback(hObject, eventdata, handles)
+% hObject    handle to pushbutton_special_a (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+
+% --- Executes on button press in pushbutton_special_B.
+function pushbutton_special_B_Callback(hObject, eventdata, handles)
+% hObject    handle to pushbutton_special_B (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+
+% --- Executes on button press in pushbutton_getStatus.
+function pushbutton_getStatus_Callback(hObject, eventdata, handles)
+% hObject    handle to pushbutton_getStatus (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+
+% --- Executes on selection change in popupmenu_fromPos.
+function popupmenu_fromPos_Callback(hObject, eventdata, handles)
+% hObject    handle to popupmenu_fromPos (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: contents = cellstr(get(hObject,'String')) returns popupmenu_fromPos contents as cell array
+%        contents{get(hObject,'Value')} returns selected item from popupmenu_fromPos
+
+
+% --- Executes during object creation, after setting all properties.
+function popupmenu_fromPos_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to popupmenu_fromPos (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: popupmenu controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+
+% --- Executes on selection change in popupmenu_toPos.
+function popupmenu_toPos_Callback(hObject, eventdata, handles)
+% hObject    handle to popupmenu_toPos (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: contents = cellstr(get(hObject,'String')) returns popupmenu_toPos contents as cell array
+%        contents{get(hObject,'Value')} returns selected item from popupmenu_toPos
+
+
+% --- Executes during object creation, after setting all properties.
+function popupmenu_toPos_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to popupmenu_toPos (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: popupmenu controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+
+% --- Executes on button press in pushbutton_movePlate.
+function pushbutton_movePlate_Callback(hObject, eventdata, handles)
+% hObject    handle to pushbutton_movePlate (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
