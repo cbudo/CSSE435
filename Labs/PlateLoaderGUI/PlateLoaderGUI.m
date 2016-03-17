@@ -55,6 +55,10 @@ function PlateLoaderGUI_OpeningFcn(hObject, eventdata, handles, varargin)
 % Choose default command line output for PlateLoaderGUI
 handles.output = hObject;
 
+handles.user.backgroundImage = addImageToAxes('robot_background.jpg', handles.axes_background, 550);
+handles.user.gripperImage = addImageToAxes('gripper_closed_no_plate.jpg', handles.axes_gripper, 100);
+handles.user.plateImage = addImageToAxes('plate_only.jpg', handles.axes_plate, 100);
+handles.user.extendImage = addImageToAxes('extended_bars.jpg', handles.axes_extended_bars,25);
 % Update handles structure
 guidata(hObject, handles);
 
