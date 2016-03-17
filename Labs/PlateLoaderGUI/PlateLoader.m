@@ -1,6 +1,6 @@
 classdef PlateLoader < handle
-    %PLATELOADER Summary of this class goes here
-    %   Detailed explanation goes here
+    %PLATELOADER class is a wrapper object for interacting with the
+    %Robotics Lab Plate loader. 
     
     properties
         serialRobot
@@ -11,6 +11,7 @@ classdef PlateLoader < handle
     end
     
     methods
+        %% Constructs the PlateLoader on a port, and sets standard flags to their defaults. 
         function robot = PlateLoader(port)
             robot.connect(port);
             robot.xAxisPosition = 3;
@@ -18,7 +19,7 @@ classdef PlateLoader < handle
             robot.isGripperClosed = 1;
             robot.isPlatePresent = 0;
         end
-
+        %% Connects to the specified port after closing all open connections.
         function connect(robot, num)
             %close all open conns
             open_ports = instrfind('Type', 'serial', 'Status', 'open');
@@ -29,14 +30,14 @@ classdef PlateLoader < handle
             com = sprintf('COM%d',num);
             fprintf('Connecting to robot\n');
             robot.serialRobot = serial(com, 'BaudRate', 19200, 'Terminator', 10, 'Timeout', 5);
-            fprintf('Status is %s\n', s.Status);
+            fprintf(robot.getResponse());
             fprintf('Opening..\n');
             fopen(robot.serialRobot);
-            fprintf('Status is %s\n', s.Status);
+            fprintf(robot.getResponse());
             fprintf(robot.serialRobot, 'INITIALIZE');
             fprintf('READY\n');
         end
-        
+        %% Clean way of retrieving Serial data from the buffer
         function response = getResponse(robot)
             s = robot.serialRobot;
             warning off all
@@ -46,13 +47,13 @@ classdef PlateLoader < handle
             end
             warning on all
         end
-        
-        function reset(robot)
+        %% Resets/Initializes the plate loader, and returns a response
+        function response = reset(robot)
             fprintf(robot.serialRobot,'RESET');
-            fprintf(robot.getResponse());
+            response = robot.getResponse();
         end
-        
-        function x(robot, pos)
+        %% Moves to x-position, returns a response
+        function response = x(robot, pos)
             s = robot.serialRobot;
             switch pos
                 case 1
@@ -66,49 +67,50 @@ classdef PlateLoader < handle
                 otherwise
                     fprintf(s,'X-AXIS 5\n');
             end
-            fprintf(robot.getResponse());
+            response = robot.getResponse();
         end
-        
-        function extend(robot)            
+        %% Extends the arm, and returns a response
+        function response = extend(robot)            
             fprintf(robot.serialRobot,'Z-AXIS EXTEND');
-            fprintf(robot.getResponse());
+            response = robot.getResponse();
         end
-        
-        function retract(robot)
+        %% Retracts the arm, and returns a response
+        function response = retract(robot)
             fprintf(robot.serialRobot,'Z-AXIS RETRACT');
-            fprintf(robot.getResponse());
+            response = robot.getResponse();
         end
-        
-        function open(robot)
+        %% Opens the gripper, and returns a response
+        function response = open(robot)
             fprintf(robot.serialRobot,'GRIPPER OPEN');
-            fprintf(robot.getResponse());
+            response = robot.getResponse();
         end
-        
-        function close(robot)
+        %% Close the gripper, and returns a response
+        function response = close(robot)
             fprintf(robot.serialRobot,'GRIPPER CLOSE');
-            fprintf(robot.getResponse());
+            response = robot.getResponse();
         end
-        
-        function movePlate(robot, startPos, endPos)
+        %% Moves the plate and returns the response. 
+        function response = movePlate(robot, startPos, endPos)
             moveCmd = sprintf('MOVE %c %c\n',char(startPos), char(endPos));
             fprintf(robot.serialRobot, moveCmd);
-            fprintf(robot.getResponse());
+            response = robot.getResponse();
+        end
+        %% TODO: Sets all the time values, prints individual responses to the screen, and returns last response
+        function response = setTimeValues(robot, timeDelays)
         end
         
-        function setTimeValues(robot, timeDelays)
-        end
-        
+        %% TODO: Resets all time values to the default time values
         function resetDefaultTimes(robot)
         end
-        
+        %% Calls the LOADER_STATUS and prints values to the screen
         function getStatus(robot)
             fprintf(robot.serialRobot,'LOADER_STATUS');
             fprintf(robot.getResponse());
         end
-        
+        %% TODO: Returns the status properties of the robot for display purposes
         function getProperties(robot)
         end
-        
+        %% Closes the COM port
         function shutdown(robot)
             robot.reset();
             fclose(robot.serialRobot);
