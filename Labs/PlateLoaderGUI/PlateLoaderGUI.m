@@ -22,7 +22,7 @@ function varargout = PlateLoaderGUI(varargin)
 
 % Edit the above text to modify the response to help PlateLoaderGUI
 
-% Last Modified by GUIDE v2.5 18-Mar-2016 11:00:08
+% Last Modified by GUIDE v2.5 18-Mar-2016 11:20:01
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -61,21 +61,56 @@ handles.user.gripperImage = addImageToAxes('gripper_closed_no_plate.jpg', handle
 handles.user.plateImage = addImageToAxes('plate_only.jpg', handles.axes_plate, 100);
 handles.user.extendImage = addImageToAxes('extended_bars.jpg', handles.axes_extended_bars,25);
 
-handles.pushbutton_pos_1.Enable = 'off';
-handles.pushbutton_pos_2.Enable = 'off';
-handles.pushbutton_pos_3.Enable = 'off';
-handles.pushbutton_pos_4.Enable = 'off';
-handles.pushbutton_pos_5.Enable = 'off';
-handles.pushbutton_gripper_extend.Enable = 'off';
-handles.pushbutton_gripper_retract.Enable = 'off';
-handles.pushbutton_gripper_open.Enable = 'off';
-handles.pushbutton_gripper_close.Enable = 'off';
+handles.pushbutton_connect.Enable = 'on';
+handles.pushbutton_disconnect.Enable = 'off';
+handles.pushbutton_reset.Enable = 'off';
+disableRobotControls(handles);
 % Update handles structure
 guidata(hObject, handles);
 
 % UIWAIT makes PlateLoaderGUI wait for user response (see UIRESUME)
 % uiwait(handles.figure1);
-
+function disableRobotControls(handles)
+    handles.pushbutton_pos_1.Enable = 'off';
+    handles.pushbutton_pos_2.Enable = 'off';
+    handles.pushbutton_pos_3.Enable = 'off';
+    handles.pushbutton_pos_4.Enable = 'off';
+    handles.pushbutton_pos_5.Enable = 'off';
+    handles.pushbutton_gripper_extend.Enable = 'off';
+    handles.pushbutton_gripper_retract.Enable = 'off';
+    handles.pushbutton_gripper_open.Enable = 'off';
+    handles.pushbutton_gripper_close.Enable = 'off';
+    
+    handles.pushbutton_getStatus.Enable = 'off';
+    
+    handles.popupmenu_fromPos.Enable = 'off';
+    handles.popupmenu_toPos.Enable = 'off';
+    handles.pushbutton_movePlate.Enable = 'off';
+    handles.pushbutton_special_a.Enable = 'off';
+    handles.pushbutton_special_b.Enable = 'off';
+    handles.pushbutton_timing_default.Enable = 'off';
+    handles.pushbutton_timing_current.Enable = 'off';
+    
+function enableRobotControls(handles)
+    handles.pushbutton_pos_1.Enable = 'on';
+    handles.pushbutton_pos_2.Enable = 'on';
+    handles.pushbutton_pos_3.Enable = 'on';
+    handles.pushbutton_pos_4.Enable = 'on';
+    handles.pushbutton_pos_5.Enable = 'on';
+    handles.pushbutton_gripper_extend.Enable = 'on';
+    handles.pushbutton_gripper_retract.Enable = 'on';
+    handles.pushbutton_gripper_open.Enable = 'on';
+    handles.pushbutton_gripper_close.Enable = 'on';
+    
+    handles.pushbutton_getStatus.Enable = 'on';
+    
+    handles.popupmenu_fromPos.Enable = 'on';
+    handles.popupmenu_toPos.Enable = 'on';
+    handles.pushbutton_movePlate.Enable = 'on';
+    handles.pushbutton_special_a.Enable = 'on';
+    handles.pushbutton_special_b.Enable = 'on';
+    handles.pushbutton_timing_default.Enable = 'on';
+    handles.pushbutton_timing_current.Enable = 'on';
 
 % --- Outputs from this function are returned to the command line.
 function varargout = PlateLoaderGUI_OutputFcn(hObject, eventdata, handles) 
@@ -99,8 +134,8 @@ updateDisplay(handles);
 
 guidata(hObject, handles);
 
-% --- Executes on button press in pushbutton_pos2.
-function pushbutton_pos2_Callback(hObject, eventdata, handles)
+% --- Executes on button press in pushbutton_pos_2.
+function pushbutton_pos_2_Callback(hObject, eventdata, handles)
 handles.text_status.String = handles.user.robot.x(2);
 updateDisplay(handles);
 
@@ -200,21 +235,18 @@ function pushbutton_connect_Callback(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 num = str2double(handles.edit_comNumber.String);
 if num > 0 && num < 50
-    handles.user.robot = PlateLoader(str2double(handles.edit_comNumber.String));
+    if handles.checkbox_simulator.Value == 1
+        handles.user.robot = PlateLoaderSim(0);
+    else
+        handles.user.robot = PlateLoader(str2double(handles.edit_comNumber.String));
+        
+    end
     handles.text_status.String = handles.user.robot.getStatus;
     hObject.Enable = 'off';
     handles.pushbutton_disconnect.Enable = 'on';
     handles.pushbutton_reset.Enable = 'on';
-    
-    handles.pushbutton_pos_1.Enable = 'on';
-    handles.pushbutton_pos_2.Enable = 'on';
-    handles.pushbutton_pos_3.Enable = 'on';
-    handles.pushbutton_pos_4.Enable = 'on';
-    handles.pushbutton_pos_5.Enable = 'on';
-    handles.pushbutton_gripper_extend.Enable = 'on';
-    handles.pushbutton_gripper_retract.Enable = 'on';
-    handles.pushbutton_gripper_open.Enable = 'on';
-    handles.pushbutton_gripper_close.Enable = 'on';
+    enableRobotControls(handles)
+
 end
 guidata(hObject, handles);
 
@@ -225,6 +257,7 @@ function pushbutton_disconnect_Callback(hObject, eventdata, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 handles.text_status.String = handles.user.robot.shutdown;
+handles.pushbutton_connect.Enable = 'on';
 handles.pushbutton_disconnect.Enable = 'off';
 handles.pushbutton_reset.Enable = 'off';
 guidata(hObject, handles);
@@ -256,9 +289,9 @@ function pushbutton_special_a_Callback(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 
 
-% --- Executes on button press in pushbutton_special_B.
-function pushbutton_special_B_Callback(hObject, eventdata, handles)
-% hObject    handle to pushbutton_special_B (see GCBO)
+% --- Executes on button press in pushbutton_special_b.
+function pushbutton_special_b_Callback(hObject, eventdata, handles)
+% hObject    handle to pushbutton_special_b (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
@@ -321,8 +354,9 @@ end
 
 % --- Executes on button press in pushbutton_movePlate.
 function pushbutton_movePlate_Callback(hObject, eventdata, handles)
-n1 = str2double(handles.popupmenu_fromPos);
-n2 = str2double(handles.popupmenu_toPos);
+n1 = handles.popupmenu_fromPos.Value;
+n2 = handles.popupmenu_toPos.Value;
+
 if n1 == n2
     handles.text_status.String = 'Please make a different position selection';
 else
