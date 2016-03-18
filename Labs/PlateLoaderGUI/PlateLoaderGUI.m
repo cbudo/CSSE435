@@ -61,7 +61,14 @@ handles.user.gripperImage = addImageToAxes('gripper_closed_no_plate.jpg', handle
 %handles.user.plateImage = addImageToAxes('plate_only.jpg', handles.axes_plate, 100);
 handles.user.extendImage = addImageToAxes('extended_bars.jpg', handles.axes_extended_bars,25);
 handles.user.extendImage.Visible = 'off';
- 
+
+defaultTimeTable = [0 60 20 30 0
+            0 0 30 30 0
+            0 30 0 30 0
+            0 30 30 0 0
+            0 30 20 60 0];
+        
+handles.uitable1.Data = defaultTimeTable;
 
 handles.pushbutton_connect.Enable = 'on';
 handles.pushbutton_disconnect.Enable = 'off';
@@ -93,6 +100,8 @@ function disableRobotControls(handles)
     handles.pushbutton_timing_default.Enable = 'off';
     handles.pushbutton_timing_current.Enable = 'off';
     
+    pause(0.5);
+    
 function enableRobotControls(handles)
     handles.pushbutton_pos_1.Enable = 'on';
     handles.pushbutton_pos_2.Enable = 'on';
@@ -113,6 +122,7 @@ function enableRobotControls(handles)
     handles.pushbutton_special_b.Enable = 'on';
     handles.pushbutton_timing_default.Enable = 'on';
     handles.pushbutton_timing_current.Enable = 'on';
+    pause(0.5);
 
 % --- Outputs from this function are returned to the command line.
 function varargout = PlateLoaderGUI_OutputFcn(hObject, eventdata, handles) 
@@ -166,35 +176,46 @@ handles.axes_extended_bars.Position = [xPos+40 zPos+60 p1(3) p1(4)];
 
 % --- Executes on button press in pushbutton_pos_1.
 function pushbutton_pos_1_Callback(hObject, eventdata, handles)
+disableRobotControls(handles);
 handles.text_status.String = handles.user.robot.x(1);
+enableRobotControls(handles);
 updateDisplay(handles);
 
 guidata(hObject, handles);
 
 % --- Executes on button press in pushbutton_pos_2.
 function pushbutton_pos_2_Callback(hObject, eventdata, handles)
+disableRobotControls(handles);
 handles.text_status.String = handles.user.robot.x(2);
+enableRobotControls(handles);
 updateDisplay(handles);
 
 guidata(hObject, handles);
 
 % --- Executes on button press in pushbutton_pos_3.
 function pushbutton_pos_3_Callback(hObject, eventdata, handles)
+
+disableRobotControls(handles);
 handles.text_status.String = handles.user.robot.x(3);
+enableRobotControls(handles);
 updateDisplay(handles);
 
 guidata(hObject, handles);
 
 % --- Executes on button press in pushbutton_pos_4.
 function pushbutton_pos_4_Callback(hObject, eventdata, handles)
+disableRobotControls(handles);
 handles.text_status.String = handles.user.robot.x(4);
+enableRobotControls(handles);
 updateDisplay(handles);
 
 guidata(hObject, handles);
 
 % --- Executes on button press in pushbutton_pos_5.
 function pushbutton_pos_5_Callback(hObject, eventdata, handles)
+disableRobotControls(handles);
 handles.text_status.String = handles.user.robot.x(5);
+enableRobotControls(handles);
 updateDisplay(handles);
 
 guidata(hObject, handles);
@@ -202,8 +223,11 @@ guidata(hObject, handles);
 
 % --- Executes on button press in pushbutton_timing_default.
 function pushbutton_timing_default_Callback(hObject, eventdata, handles)
+disableRobotControls(handles);
 handles.text_status.String = handles.user.robot.resetDefaultTimes;
 % TODO: clear that timing table on the GUI
+handles.uitable1.Data = handles.user.robot.defaultTimeTable;
+enableRobotControls(handles);
 updateDisplay(handles);
 
 guidata(hObject, handles);
@@ -212,32 +236,42 @@ guidata(hObject, handles);
 function pushbutton_timing_current_Callback(hObject, eventdata, handles)
 %TODO: Grab data from table and pass into
 %handles.user.robot.setTimeValues(values)
-handles.user.robot.setTimeValues(int8(cell2mat(get(handles.uitable1, 'Data'))));
+disableRobotControls(handles);
+handles.user.robot.setTimeValues(int16(get(handles.uitable1, 'Data')));
+enableRobotControls(handles);
 guidata(hObject, handles);
 % --- Executes on button press in pushbutton_gripper_extend.
 function pushbutton_gripper_extend_Callback(hObject, eventdata, handles)
+disableRobotControls(handles);
 handles.text_status.String = handles.user.robot.extend;
+enableRobotControls(handles);
 updateDisplay(handles);
 
 guidata(hObject, handles);
 
 % --- Executes on button press in pushbutton_gripper_retract.
 function pushbutton_gripper_retract_Callback(hObject, eventdata, handles)
+disableRobotControls(handles);
 handles.text_status.String = handles.user.robot.retract;
+enableRobotControls(handles);
 updateDisplay(handles);
 
 guidata(hObject, handles);
 
 % --- Executes on button press in pushbutton_gripper_open.
 function pushbutton_gripper_open_Callback(hObject, eventdata, handles)
+disableRobotControls(handles);
 handles.text_status.String = handles.user.robot.open;
+enableRobotControls(handles);
 updateDisplay(handles);
 
 guidata(hObject, handles);
 
 % --- Executes on button press in pushbutton_gripper_close.
 function pushbutton_gripper_close_Callback(hObject, eventdata, handles)
+disableRobotControls(handles);
 handles.text_status.String = handles.user.robot.close;
+enableRobotControls(handles);
 updateDisplay(handles);
 
 guidata(hObject, handles);
@@ -308,7 +342,10 @@ function pushbutton_reset_Callback(hObject, eventdata, handles)
 % hObject    handle to pushbutton_reset (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
+
+disableRobotControls(handles);
 handles.text_status.String = handles.user.robot.reset;
+enableRobotControls(handles);
 updateDisplay(handles);
 guidata(hObject, handles);
 updateDisplay(handles);
@@ -327,6 +364,10 @@ function pushbutton_special_a_Callback(hObject, eventdata, handles)
 % hObject    handle to pushbutton_special_a (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
+disableRobotControls(handles);
+handles.text_status.String = handles.user.robot.special1;
+updateDisplay(handles);
+enableRobotControls(handles);
 
 
 % --- Executes on button press in pushbutton_special_b.
@@ -334,14 +375,19 @@ function pushbutton_special_b_Callback(hObject, eventdata, handles)
 % hObject    handle to pushbutton_special_b (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-
+disableRobotControls(handles);
+handles.text_status.String = handles.user.robot.special2;
+updateDisplay(handles);
+enableRobotControls(handles);
 
 % --- Executes on button press in pushbutton_getStatus.
 function pushbutton_getStatus_Callback(hObject, eventdata, handles)
 % hObject    handle to pushbutton_getStatus (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
+disableRobotControls(handles);
 handles.text_status.String = handles.user.robot.getStatus;
+enableRobotControls(handles);
 updateDisplay(handles);
 guidata(hObject, handles);
 updateDisplay(handles);
@@ -394,6 +440,7 @@ end
 
 % --- Executes on button press in pushbutton_movePlate.
 function pushbutton_movePlate_Callback(hObject, eventdata, handles)
+disableRobotControls(handles);
 n1 = handles.popupmenu_fromPos.Value;
 n2 = handles.popupmenu_toPos.Value;
 
@@ -402,5 +449,6 @@ if n1 == n2
 else
     handles.text_status.String = handles.user.robot.movePlate(n1, n2);
 end
+enableRobotControls(handles);
 guidata(hObject, handles);
 updateDisplay(handles);
