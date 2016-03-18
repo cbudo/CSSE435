@@ -260,6 +260,7 @@ handles.text_status.String = handles.user.robot.shutdown;
 handles.pushbutton_connect.Enable = 'on';
 handles.pushbutton_disconnect.Enable = 'off';
 handles.pushbutton_reset.Enable = 'off';
+disableRobotControls(handles);
 guidata(hObject, handles);
 
 
