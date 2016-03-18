@@ -22,7 +22,7 @@ function varargout = PlateLoaderGUI(varargin)
 
 % Edit the above text to modify the response to help PlateLoaderGUI
 
-% Last Modified by GUIDE v2.5 18-Mar-2016 11:20:01
+% Last Modified by GUIDE v2.5 18-Mar-2016 12:37:52
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -403,4 +403,3 @@ else
 end
 guidata(hObject, handles);
 updateDisplay(handles);
-
