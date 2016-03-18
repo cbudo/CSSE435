@@ -212,7 +212,8 @@ guidata(hObject, handles);
 function pushbutton_timing_current_Callback(hObject, eventdata, handles)
 %TODO: Grab data from table and pass into
 %handles.user.robot.setTimeValues(values)
-
+handles.user.robot.setTimeValues(int8(cell2mat(get(handles.uitable1, 'Data'))));
+guidata(hObject, handles);
 % --- Executes on button press in pushbutton_gripper_extend.
 function pushbutton_gripper_extend_Callback(hObject, eventdata, handles)
 handles.text_status.String = handles.user.robot.extend;
