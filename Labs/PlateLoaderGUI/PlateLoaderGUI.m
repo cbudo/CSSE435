@@ -58,8 +58,10 @@ handles.output = hObject;
 %todo: adjust position of these to be in the correct locations.
 handles.user.backgroundImage = addImageToAxes('robot_background.jpg', handles.axes_background, 550);
 handles.user.gripperImage = addImageToAxes('gripper_closed_no_plate.jpg', handles.axes_gripper, 100);
-handles.user.plateImage = addImageToAxes('plate_only.jpg', handles.axes_plate, 100);
+%handles.user.plateImage = addImageToAxes('plate_only.jpg', handles.axes_plate, 100);
 handles.user.extendImage = addImageToAxes('extended_bars.jpg', handles.axes_extended_bars,25);
+handles.user.extendImage.Visible = 'off';
+ 
 
 handles.pushbutton_connect.Enable = 'on';
 handles.pushbutton_disconnect.Enable = 'off';
@@ -126,6 +128,41 @@ function updateDisplay(handles)
 %Todo: using handles.user.robot.xAxisPosition, ".isZAxisExtended,
 %".isGripperClosed, ".isPlatePresent, update/move the axes around to show
 %iths. 
+zPos = 350;
+if handles.user.robot.isZAxisExtended == true
+    handles.user.extendImage.Visible = 'on';
+    zPos = 230;
+else
+    handles.user.extendImage.Visible = 'off';
+end
+
+if handles.user.robot.isGripperClosed == true
+    handles.user.gripperImage = addImageToAxes('gripper_closed_no_plate.jpg', handles.axes_gripper, 100);
+else
+    handles.user.gripperImage = addImageToAxes('gripper_open_no_plate.jpg', handles.axes_gripper, 100);
+end
+
+if handles.user.robot.isPlatePresent == true
+    handles.user.gripperImage = addImageToAxes('gripper_with_plate.jpg', handles.axes_gripper, 100);
+end
+xPos = 0;
+switch handles.user.robot.xAxisPosition
+    case 1
+        xPos = 140;
+    case 2
+        xPos = 230;
+    case 3
+        xPos = 325;
+    case 4
+        xPos = 420;
+    case 5
+        xPos = 510;
+end
+p1 = handles.axes_gripper.Position;
+handles.axes_gripper.Position = [xPos zPos p1(3) p1(4)];
+p1 = handles.axes_extended_bars.Position;
+handles.axes_extended_bars.Position = [xPos+40 zPos+60 p1(3) p1(4)];
+    
 
 % --- Executes on button press in pushbutton_pos_1.
 function pushbutton_pos_1_Callback(hObject, eventdata, handles)
@@ -249,6 +286,7 @@ if num > 0 && num < 50
 
 end
 guidata(hObject, handles);
+updateDisplay(handles);
 
 
 % --- Executes on button press in pushbutton_disconnect.
@@ -271,8 +309,8 @@ function pushbutton_reset_Callback(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 handles.text_status.String = handles.user.robot.reset;
 updateDisplay(handles);
-
 guidata(hObject, handles);
+updateDisplay(handles);
 
 % --- Executes on button press in checkbox_simulator.
 function checkbox_simulator_Callback(hObject, eventdata, handles)
@@ -304,8 +342,8 @@ function pushbutton_getStatus_Callback(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 handles.text_status.String = handles.user.robot.getStatus;
 updateDisplay(handles);
-
 guidata(hObject, handles);
+updateDisplay(handles);
 
 % --- Executes on selection change in popupmenu_fromPos.
 function popupmenu_fromPos_Callback(hObject, eventdata, handles)
@@ -363,5 +401,6 @@ if n1 == n2
 else
     handles.text_status.String = handles.user.robot.movePlate(n1, n2);
 end
-updateDisplay(handles);
 guidata(hObject, handles);
+updateDisplay(handles);
+
