@@ -28,7 +28,7 @@ int joyY = 0;
 int joyX = 0;
 int restY;
 int restX;
-unsigned char degs[] = { 90, 90, 90, 90, 90, 90 };
+int degs[] = { 90, 90, 90, 90, 90, 90 };
 
 int incrAmt = 0;
 
@@ -131,7 +131,7 @@ void incrementValues() {
 	if (degs[selection] > 180) {
 		degs[selection] = 180;
 	}
-	else if (degs[selection] < 0) {
+	else if (degs[selection] < 1) {
 		degs[selection] = 0;
 	}
 	digitalWrite(64 + selection, HIGH);
