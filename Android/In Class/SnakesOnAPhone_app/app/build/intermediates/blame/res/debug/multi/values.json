@@ -1,0 +1,102 @@
+[
+    {
+        "outputFile": "C:\\Users\\budocf\\Documents\\Courses\\Junior\\Spring\\CSSE435\\Android\\In Class\\SnakesOnAPhone_app\\app\\build\\intermediates\\res\\merged\\debug\\values\\values.xml",
+        "map": [
+            {
+                "to": {
+                    "startLine": 3,
+                    "startColumn": 4,
+                    "startOffset": 155,
+                    "endColumn": 63,
+                    "endOffset": 214
+                },
+                "from": {
+                    "file": "C:\\Users\\budocf\\Documents\\Courses\\Junior\\Spring\\CSSE435\\Android\\In Class\\SnakesOnAPhone_app\\app\\src\\main\\res\\values\\strings.xml",
+                    "position": {
+                        "startLine": 19,
+                        "startColumn": 2,
+                        "startOffset": 814,
+                        "endColumn": 61,
+                        "endOffset": 873
+                    }
+                }
+            },
+            {
+                "to": {
+                    "startLine": 4,
+                    "startColumn": 4,
+                    "startOffset": 219,
+                    "endColumn": 63,
+                    "endOffset": 278
+                },
+                "from": {
+                    "file": "C:\\Users\\budocf\\Documents\\Courses\\Junior\\Spring\\CSSE435\\Android\\In Class\\SnakesOnAPhone_app\\app\\src\\main\\res\\values\\strings.xml",
+                    "position": {
+                        "startLine": 20,
+                        "startColumn": 2,
+                        "startOffset": 876,
+                        "endColumn": 61,
+                        "endOffset": 935
+                    }
+                }
+            },
+            {
+                "to": {
+                    "startLine": 5,
+                    "startColumn": 4,
+                    "startOffset": 283,
+                    "endColumn": 65,
+                    "endOffset": 344
+                },
+                "from": {
+                    "file": "C:\\Users\\budocf\\Documents\\Courses\\Junior\\Spring\\CSSE435\\Android\\In Class\\SnakesOnAPhone_app\\app\\src\\main\\res\\values\\strings.xml",
+                    "position": {
+                        "startLine": 18,
+                        "startColumn": 2,
+                        "startOffset": 750,
+                        "endColumn": 63,
+                        "endOffset": 811
+                    }
+                }
+            },
+            {
+                "to": {
+                    "startLine": 6,
+                    "startColumn": 4,
+                    "startOffset": 349,
+                    "endColumn": 62,
+                    "endOffset": 407
+                },
+                "from": {
+                    "file": "C:\\Users\\budocf\\Documents\\Courses\\Junior\\Spring\\CSSE435\\Android\\In Class\\SnakesOnAPhone_app\\app\\src\\main\\res\\values\\strings.xml",
+                    "position": {
+                        "startLine": 17,
+                        "startColumn": 2,
+                        "startOffset": 689,
+                        "endColumn": 60,
+                        "endOffset": 747
+                    }
+                }
+            },
+            {
+                "to": {
+                    "startLine": 7,
+                    "startColumn": 4,
+                    "startOffset": 412,
+                    "endColumn": 43,
+                    "endOffset": 451
+                },
+                "from": {
+                    "file": "C:\\Users\\budocf\\Documents\\Courses\\Junior\\Spring\\CSSE435\\Android\\In Class\\SnakesOnAPhone_app\\app\\src\\main\\res\\values\\strings.xml",
+                    "position": {
+                        "startLine": 22,
+                        "startColumn": 4,
+                        "startOffset": 941,
+                        "endColumn": 51,
+                        "endOffset": 988
+                    }
+                }
+            }
+        ]
+    }
+]
