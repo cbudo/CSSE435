@@ -4,21 +4,29 @@
     api-level="22"
     density="xxxhdpi"
     format="7"
-    timestamp="47106547239280" >
+    timestamp="66746283693782" >
 
     <task
         name="javac"
-        duration="0" />
+        duration="1292" />
     <task
         name="instant-run-dex"
         duration="0" />
     <task
         name="instant-run-transform"
-        duration="0" />
+        duration="179" />
     <task
         name="verifier"
-        duration="0" />
+        duration="53" />
 
-    <build timestamp="47106547239280" />
+    <artifact
+        location="C:\Users\budocf\Documents\Courses\Junior\Spring\CSSE435\Android\In Class\OneGoodGpsReading\app\build\outputs\apk\app-debug.apk"
+        type="MAIN" />
+
+    <build timestamp="66746283693782" >
+        <artifact
+            location="C:\Users\budocf\Documents\Courses\Junior\Spring\CSSE435\Android\In Class\OneGoodGpsReading\app\build\outputs\apk\app-debug.apk"
+            type="MAIN" />
+    </build>
 
 </instant-run>
