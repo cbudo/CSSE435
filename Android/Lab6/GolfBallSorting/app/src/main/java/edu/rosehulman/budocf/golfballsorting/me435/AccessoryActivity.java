@@ -20,7 +20,7 @@ import android.util.Log;
 
 public class AccessoryActivity extends Activity {
 
-  private static final String TAG = AccessoryActivity.class.getSimpleName();
+  protected static final String TAG = AccessoryActivity.class.getSimpleName();
   private PendingIntent mPermissionIntent;
   private static final String ACTION_USB_PERMISSION = "edu.rosehulman.budocf.golfballsorting.me435.action.USB_PERMISSION";
   private boolean mPermissionRequestPending;
