@@ -173,68 +173,59 @@
             android:onClick="handleScript3Click" />
     </LinearLayout>
 
-    <RelativeLayout
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="0dp"
+        android:layout_height="wrap_content"
         android:layout_marginTop="5dp"
-        android:layout_weight="1"
+        android:padding="3dp"
+        android:orientation="horizontal"
         android:background="@drawable/yellow_button" >
+
+
+        <Button
+            android:id="@+id/wheel_speed_forward_button"
+            style="@style/WheelSpeedButton"
+            android:background="@drawable/black_button"
+            android:text="F"
+            android:onClick="handleForwardClick" />
+
+
+        <Button
+            android:id="@+id/wheel_speed_left_button"
+            style="@style/WheelSpeedButton"
+            android:background="@drawable/black_button"
+            android:text="L"
+            android:onClick="handleLeftClick" />
 
         <Button
             android:id="@+id/wheel_speed_stop_button"
             android:background="@drawable/red_button"
             style="@style/WheelSpeedButton"
-            android:layout_centerInParent="true"
-            android:text="Stop"
+            android:text="S"
             android:onClick="handleStopClick" />
-
-        <Button
-            android:id="@+id/wheel_speed_forward_button"
-            style="@style/WheelSpeedButton"
-            android:layout_above="@id/wheel_speed_stop_button"
-            android:layout_centerHorizontal="true"
-            android:background="@drawable/black_button"
-            android:text="Forward"
-            android:onClick="handleForwardClick" />
-
-        <Button
-            android:id="@+id/wheel_speed_reverse_button"
-            style="@style/WheelSpeedButton"
-            android:layout_below="@id/wheel_speed_stop_button"
-            android:layout_centerHorizontal="true"
-            android:background="@drawable/black_button"
-            android:text="Back"
-            android:onClick="handleBackClick" />
-
-        <Button
-            android:id="@+id/wheel_speed_left_button"
-            style="@style/WheelSpeedButton"
-            android:layout_alignTop="@id/wheel_speed_forward_button"
-            android:layout_toLeftOf="@id/wheel_speed_stop_button"
-            android:background="@drawable/black_button"
-            android:text="Left"
-            android:onClick="handleLeftClick" />
 
         <Button
             android:id="@+id/wheel_speed_right_button"
             android:background="@drawable/black_button"
-            android:layout_toRightOf="@id/wheel_speed_stop_button"
-            android:layout_alignTop="@id/wheel_speed_forward_button"
             style="@style/WheelSpeedButton"
-            android:text="Right"
+            android:text="R"
             android:onClick="handleRightClick" />
 
         <Button
-            android:id="@+id/battery_voltage_request_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:id="@+id/wheel_speed_reverse_button"
+            style="@style/WheelSpeedButton"
             android:background="@drawable/black_button"
-            android:layout_alignParentRight="true"
-            android:layout_alignParentBottom="true"
+            android:text="B"
+            android:onClick="handleBackClick" />
+
+        <Button
+            android:id="@+id/battery_voltage_request_button"
+            style="@style/WheelSpeedButton"
+            android:background="@drawable/black_button"
             android:textColor="#2FF"
-            android:text="Battery"
+            android:text="Bat"
             android:onClick="handleBatteryClick" />
 
-    </RelativeLayout>
+    </LinearLayout>
 
 </LinearLayout>

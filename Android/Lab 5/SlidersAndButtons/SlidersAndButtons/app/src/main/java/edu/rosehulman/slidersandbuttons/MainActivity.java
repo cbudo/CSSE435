@@ -1,6 +1,5 @@
 package edu.rosehulman.slidersandbuttons;
 
-import android.app.Activity;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.View;
@@ -12,11 +11,14 @@ import android.widget.Toast;
 
 import java.util.ArrayList;
 
-public class MainActivity extends Activity implements OnSeekBarChangeListener {
+import edu.rosehulman.me435.AccessoryActivity;
+
+public class MainActivity extends AccessoryActivity implements OnSeekBarChangeListener {
     private ArrayList<SeekBar> mSeekBars = new ArrayList<SeekBar>();
     private TextView mJointAnglesTextView;
     private TextView mGripperDistanceTextView;
     private Handler mCommandHandler = new Handler(); // Used for scripts
+
 
     private static final String WHEEL_MODE_REVERSE = "REVERSE";
     private static final String WHEEL_MODE_BRAKE = "BRAKE";
@@ -29,12 +31,12 @@ public class MainActivity extends Activity implements OnSeekBarChangeListener {
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         mJointAnglesTextView = (TextView) findViewById(R.id.joint_angles_textview);
         mGripperDistanceTextView = (TextView) findViewById(R.id.gripper_distance_textview);
-        mSeekBars.add((SeekBar)findViewById(R.id.gripper_seek_bar)); // Gripper index 0.
-        mSeekBars.add((SeekBar)findViewById(R.id.joint_1_seek_bar)); // Joints index 1-5
-        mSeekBars.add((SeekBar)findViewById(R.id.joint_2_seek_bar));
-        mSeekBars.add((SeekBar)findViewById(R.id.joint_3_seek_bar));
-        mSeekBars.add((SeekBar)findViewById(R.id.joint_4_seek_bar));
-        mSeekBars.add((SeekBar)findViewById(R.id.joint_5_seek_bar));
+        mSeekBars.add((SeekBar) findViewById(R.id.gripper_seek_bar)); // Gripper index 0.
+        mSeekBars.add((SeekBar) findViewById(R.id.joint_1_seek_bar)); // Joints index 1-5
+        mSeekBars.add((SeekBar) findViewById(R.id.joint_2_seek_bar));
+        mSeekBars.add((SeekBar) findViewById(R.id.joint_3_seek_bar));
+        mSeekBars.add((SeekBar) findViewById(R.id.joint_4_seek_bar));
+        mSeekBars.add((SeekBar) findViewById(R.id.joint_5_seek_bar));
         for (SeekBar seekBar : mSeekBars) {
             seekBar.setOnSeekBarChangeListener(this);
         }
@@ -53,55 +55,148 @@ public class MainActivity extends Activity implements OnSeekBarChangeListener {
 
     // ------------------------ Button Listeners ------------------------
     public void handleHomeClick(View view) {
+        sendCommand("ATTACH 111111");
         updateSlidersForPosition(0, 90, 0, -90, 90);
-        Toast.makeText(this, "TODO: Implement button", Toast.LENGTH_SHORT).show();
+        String command = getString(R.string.position_command, 0, 90, 0, -90, 90);
+        sendCommand(command);
+//        Toast.makeText(this, "TODO: Implement button", Toast.LENGTH_SHORT).show();
     }
 
     public void handlePosition1Click(View view) {
-        Toast.makeText(this, "TODO: Implement button", Toast.LENGTH_SHORT).show();
+        updateSlidersForPosition(0, 120, -62, -150, 0);
+        String command = getString(R.string.position_command, 0, 120, -62, -150, 0);
+        sendCommand(command);
     }
 
     public void handlePosition2Click(View view) {
-        Toast.makeText(this, "TODO: Implement button", Toast.LENGTH_SHORT).show();
+        updateSlidersForPosition(0, 180, 0, -180, 0);
+        String command = getString(R.string.position_command, 0, 180, 0, -180, 0);
+        sendCommand(command);
+        mCommandHandler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                updateSlidersForPosition(0, 180, -90, -180, 0);
+                String command = getString(R.string.position_command, 0, 180, -90, -180, 0);
+                sendCommand(command);
+            }
+        }, 1000);
     }
 
     public void handleScript1Click(View view) {
-        Toast.makeText(this, "TODO: Implement button", Toast.LENGTH_SHORT).show();
+        updateSlidersForPosition(0, 90, 0, -90, 90);
+        String command = getString(R.string.position_command, 0, 90, 0, -90, 90);
+        sendCommand(command);
+        mCommandHandler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                updateSlidersForPosition(0, 90, 0, -45, 90);
+                String command = getString(R.string.position_command, 0, 90, 0, -45, 90);
+                sendCommand(command);
+            }
+        }, 1000);
+        mCommandHandler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                updateSlidersForPosition(0, 90, 0, -135, 90);
+                String command = getString(R.string.position_command, 0, 90, 0, -135, 90);
+                sendCommand(command);
+            }
+        }, 2000);
+        mCommandHandler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                updateSlidersForPosition(0, 90, 0, -90, 90);
+                String command = getString(R.string.position_command, 0, 90, 0, -90, 90);
+                sendCommand(command);
+            }
+        }, 3000);
     }
 
     public void handleScript2Click(View view) {
-        Toast.makeText(this, "TODO: Implement button", Toast.LENGTH_SHORT).show();
+        sendCommand("GRIPPER 10");
+        mCommandHandler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                sendCommand("GRIPPER 60");
+            }
+        }, 1000);
+        mCommandHandler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                sendCommand("GRIPPER 10");
+            }
+        }, 3000);
+        mCommandHandler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                sendCommand("Gripper 50");
+            }
+        }, 4000);
     }
 
     public void handleScript3Click(View view) {
-        Toast.makeText(this, "TODO: Implement button", Toast.LENGTH_SHORT).show();
+        updateSlidersForPosition(0, 180, 0, -180, 0);
+        String command = getString(R.string.position_command, 0, 180, 0, -180, 0);
+        sendCommand(command);
+        mCommandHandler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                updateSlidersForPosition(0, 180, -90, -180, 0);
+                String command = getString(R.string.position_command, 0, 180, -90, -180, 0);
+                sendCommand(command);
+            }
+        }, 1000);
+        mCommandHandler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                updateSlidersForPosition(0, 90, 0, -90, 90);
+                String command = getString(R.string.position_command, 0, 90, 0, -90, 90);
+                sendCommand(command);
+            }
+        }, 5000);
     }
 
     public void handleStopClick(View view) {
-        Toast.makeText(this, "TODO: Implement button", Toast.LENGTH_SHORT).show();
+        String command = getString(R.string.wheel_speed_command, "BRAKE", 0, "BRAKE", 0);
+        sendCommand(command);
     }
 
     public void handleForwardClick(View view) {
-        Toast.makeText(this, "TODO: Implement button", Toast.LENGTH_SHORT).show();
+        String command = getString(R.string.wheel_speed_command, "FORWARD", 100, "FORWARD", 100);
+        sendCommand(command);
     }
 
     public void handleBackClick(View view) {
-        Toast.makeText(this, "TODO: Implement button", Toast.LENGTH_SHORT).show();
+        String command = getString(R.string.wheel_speed_command, "REVERSE", 100, "REVERSE", 100);
+        sendCommand(command);
     }
 
     public void handleLeftClick(View view) {
-        Toast.makeText(this, "TODO: Implement button", Toast.LENGTH_SHORT).show();
+        String command = getString(R.string.wheel_speed_command, "FORWARD", 50, "FORWARD", 200);
+        sendCommand(command);
     }
 
     public void handleRightClick(View view) {
-        Toast.makeText(this, "TODO: Implement button", Toast.LENGTH_SHORT).show();
+        String command = getString(R.string.wheel_speed_command, "FORWARD", 200, "FORWARD", 50);
+        sendCommand(command);
     }
 
     public void handleBatteryClick(View view) {
-        Toast.makeText(this, "TODO: Implement button", Toast.LENGTH_SHORT).show();
+        sendCommand(getString(R.string.battery_voltage_request));
+        Toast.makeText(this, "Requested Battery Voltage", Toast.LENGTH_SHORT).show();
         // Need to send BATTERY VOLTAGE REQUEST
         // Toast all replies.  Arduino will reply with a BATTERY VOLTAGE REPLY.
         // Receive messages will arrive via onCommandReceived
+    }
+
+    @Override
+    protected void onCommandReceived(String receivedCommand) {
+        super.onCommandReceived(receivedCommand);
+        Toast.makeText(this, "Received: " + receivedCommand, Toast.LENGTH_SHORT).show();
+        if (receivedCommand.equalsIgnoreCase("script3")){
+            handleScript1Click(null);
+        }
+
     }
 
     // ------------------------ OnSeekBarChangeListener ------------------------
@@ -128,7 +223,7 @@ public class MainActivity extends Activity implements OnSeekBarChangeListener {
         mGripperDistanceTextView.setText(gripperStr);
 
         String command = "";
-        switch(seekBar.getId()) {
+        switch (seekBar.getId()) {
             case R.id.gripper_seek_bar:
                 command = getString(R.string.gripper_command, seekBarValues[0]);
                 break;
@@ -149,12 +244,15 @@ public class MainActivity extends Activity implements OnSeekBarChangeListener {
                 break;
         }
         // Uncomment this line to send the slider command.
-//		sendCommand(command);
+        sendCommand(command);
     }
 
     @Override
-    public void onStartTrackingTouch(SeekBar seekBar) {}
+    public void onStartTrackingTouch(SeekBar seekBar) {
+    }
+
     @Override
-    public void onStopTrackingTouch(SeekBar seekBar) {}
+    public void onStopTrackingTouch(SeekBar seekBar) {
+    }
 
 }
