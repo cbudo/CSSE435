@@ -5,13 +5,16 @@ GolfBallStand stand;
 
 void setup(){
   Serial.begin(9600);
+  delay(50);
+  stand.calibrate();
+  Serial.println("Calibration complete");
 }
 
 void loop() {
   while(digitalRead(PIN_GOLF_BALL_STAND_SWITCH)) {
     // Do nothing until the switch is pressed.
   }
-  Serial.print("---------------------------------");
+  Serial.print("---------------------------------\n");
   ballColor_1 = stand.determineBallColor(LOCATION_1);
   Serial.print("  Location 1 ball   = ");
   printBallColor(ballColor_1);
