@@ -90,57 +90,7 @@
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceSmall"
         android:text="---"
-        android:id="@+id/state_textView"
-        android:layout_marginLeft="10dp"
-        android:layout_below="@+id/time_textView"
-        android:layout_toRightOf="@+id/sensorTitle_textView" />
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceSmall"
-        android:text="---"
-        android:id="@+id/time_textView"
-        android:layout_marginLeft="10dp"
-        android:layout_below="@+id/gps_textView"
-        android:layout_toRightOf="@+id/sensorTitle_textView" />
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceSmall"
-        android:text="---"
-        android:id="@+id/gps_textView"
-        android:layout_marginLeft="10dp"
-        android:layout_below="@+id/sensor_textView"
-        android:layout_toRightOf="@+id/sensorTitle_textView" />
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceSmall"
-        android:text="---"
-        android:id="@+id/sensor_textView"
-        android:layout_marginLeft="10dp"
-        android:layout_below="@+id/xy_textView"
-        android:layout_toRightOf="@+id/sensorTitle_textView" />
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceSmall"
-        android:text="---"
-        android:id="@+id/xy_textView"
-        android:layout_marginLeft="10dp"
-        android:layout_below="@+id/target_textView"
-        android:layout_toRightOf="@+id/sensorTitle_textView" />
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceSmall"
-        android:text="---"
-        android:id="@+id/target_textView"
+        android:id="@+id/command_textView"
         android:layout_marginLeft="10dp"
         android:layout_below="@+id/turn_textView"
         android:layout_toRightOf="@+id/sensorTitle_textView" />
@@ -152,7 +102,7 @@
         android:text="---"
         android:id="@+id/turn_textView"
         android:layout_marginLeft="10dp"
-        android:layout_below="@+id/command_textView"
+        android:layout_below="@+id/target_textView"
         android:layout_toRightOf="@+id/sensorTitle_textView" />
 
     <TextView
@@ -160,7 +110,57 @@
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceSmall"
         android:text="---"
-        android:id="@+id/command_textView"
+        android:id="@+id/target_textView"
+        android:layout_marginLeft="10dp"
+        android:layout_below="@+id/xy_textView"
+        android:layout_toRightOf="@+id/sensorTitle_textView" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:text="---"
+        android:id="@+id/xy_textView"
+        android:layout_marginLeft="10dp"
+        android:layout_below="@+id/sensor_textView"
+        android:layout_toRightOf="@+id/sensorTitle_textView" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:text="---"
+        android:id="@+id/sensor_textView"
+        android:layout_marginLeft="10dp"
+        android:layout_below="@+id/gps_textView"
+        android:layout_toRightOf="@+id/sensorTitle_textView" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:text="---"
+        android:id="@+id/gps_textView"
+        android:layout_marginLeft="10dp"
+        android:layout_below="@+id/time_textView"
+        android:layout_toRightOf="@+id/sensorTitle_textView" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:text="---"
+        android:id="@+id/time_textView"
+        android:layout_marginLeft="10dp"
+        android:layout_below="@+id/state_textView"
+        android:layout_toRightOf="@+id/sensorTitle_textView" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:text="---"
+        android:id="@+id/state_textView"
         android:layout_marginLeft="10dp"
         android:layout_alignParentTop="true"
         android:layout_toRightOf="@+id/sensorTitle_textView"
@@ -272,7 +272,7 @@
         android:textAppearance="?android:attr/textAppearanceMedium"
         android:text="Chris Budo"
         android:id="@+id/name_textView"
-        android:layout_alignTop="@+id/command_textView"
+        android:layout_alignTop="@+id/state_textView"
         android:layout_alignParentRight="true"
         android:layout_alignParentEnd="true"
         android:textColor="#ff0000" />

@@ -60,18 +60,18 @@ void setup(){
   attachInterrupt(1, int1_isr, FALLING);
   attachInterrupt(2, int2_isr, FALLING);
   // Register callbacks for commands you might receive from Android.
-//  robotAsciiCom.registerWheelSpeedCallback(wheelSpeedMessageFromAndroid);
-//  robotAsciiCom.registerPositionCallback(positionMessageFromAndroid);
-//  robotAsciiCom.registerJointAngleCallback(jointAngleMessageFromAndroid);
-//  robotAsciiCom.registerGripperCallback(gripperMessageFromAndroid);
-//  robotAsciiCom.registerAttachSelectedServosCallback(attachSelectedServosCallback);
-//  robotAsciiCom.registerBatteryVoltageRequestCallback(batteryVoltageRequestFromAndroid);
-//  robotAsciiCom.registerWheelCurrentRequestCallback(wheelCurrentRequestFromAndroid);
+  robotAsciiCom.registerWheelSpeedCallback(wheelSpeedMessageFromAndroid);
+  robotAsciiCom.registerPositionCallback(positionMessageFromAndroid);
+  robotAsciiCom.registerJointAngleCallback(jointAngleMessageFromAndroid);
+  robotAsciiCom.registerGripperCallback(gripperMessageFromAndroid);
+  robotAsciiCom.registerAttachSelectedServosCallback(attachSelectedServosCallback);
+  robotAsciiCom.registerBatteryVoltageRequestCallback(batteryVoltageRequestFromAndroid);
+  robotAsciiCom.registerWheelCurrentRequestCallback(wheelCurrentRequestFromAndroid);
   robotAsciiCom.registerCustomStringCallback(customStringCallbackFromAndroid);
 
     // Register callbacks for commands you might receive from the Wild Thumper.
-//  wildThumperCom.registerBatteryVoltageReplyCallback(batteryVoltageReplyFromThumper);
-//  wildThumperCom.registerWheelCurrentReplyCallback(wheelCurrentReplyFromThumper);
+  wildThumperCom.registerBatteryVoltageReplyCallback(batteryVoltageReplyFromThumper);
+  wildThumperCom.registerWheelCurrentReplyCallback(wheelCurrentReplyFromThumper);
 
   lcd.begin(16, 2);
   lcd.clear();

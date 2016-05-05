@@ -105,7 +105,7 @@ public class RobotActivity extends AccessoryActivity implements FieldGpsListener
   protected double mGuessX, mGuessY;
 
   /** Simple default robot speed used to determine the guess XY (adjust as necessary). */
-  public static final double DEFAULT_SPEED_FT_PER_SEC = 3.3;
+  public static final double DEFAULT_SPEED_FT_PER_SEC = 3;
 
   /** Current wheel duty cycle. Note always use sendWheelSpeed for robot commands. */
   protected int mLeftDutyCycle, mRightDutyCycle;
