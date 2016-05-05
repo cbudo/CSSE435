@@ -55,6 +55,40 @@ function gripperControl_OpeningFcn(hObject, eventdata, handles, varargin)
 % Choose default command line output for gripperControl
 handles.output = hObject;
 
+handles.user.jointAngles = [0 90 0 -90 90]; % Home position.
+handles.user.position1Angles = handles.user.jointAngles;
+handles.user.position2Angles = handles.user.jointAngles;
+handles.user.position3Angles = handles.user.jointAngles;
+
+% Prepare the arm axes
+view(handles.axes_arm, [-50 -50 50]);
+axis(handles.axes_arm, [-10 10 -6 6 -6 8]);
+set(handles.axes_arm, 'Visible', 'off');
+
+% Add the image of the Wild Thumper to the background axes
+addImageToAxes('wildThumper.png', handles.axes_thumperImg, 400);
+
+% Create vertices for all the patches
+makeLink0(handles.axes_arm, [.5 .5 .5]); 
+% Save handles to the patch objects and create a vertices matrix for each.
+handles.user.link1Patch = makeLink1(handles.axes_arm, [.9 .9 .9]);
+handles.user.link1Vertices = get(handles.user.link1Patch, 'Vertices')';
+handles.user.link1Vertices(4,:) = ones(1, size(handles.user.link1Vertices,2));
+handles.user.link2Patch = makeLink2(handles.axes_arm, [.9 .9 .9]);
+handles.user.link2Vertices = get(handles.user.link2Patch, 'Vertices')';
+handles.user.link2Vertices(4,:) = ones(1, size(handles.user.link2Vertices,2));
+handles.user.link3Patch = makeLink3(handles.axes_arm, [.9 .9 .9]);
+handles.user.link3Vertices = get(handles.user.link3Patch, 'Vertices')';
+handles.user.link3Vertices(4,:) = ones(1, size(handles.user.link3Vertices,2));
+handles.user.link4Patch = makeLink4(handles.axes_arm, [.9 .9 .9]);
+handles.user.link4Vertices = get(handles.user.link4Patch, 'Vertices')';
+handles.user.link4Vertices(4,:) = ones(1, size(handles.user.link4Vertices,2));
+handles.user.link5Patch = makeLink5(handles.axes_arm, [.95 .95 0]);
+handles.user.link5Vertices = get(handles.user.link5Patch, 'Vertices')';
+handles.user.link5Vertices(4,:) = ones(1, size(handles.user.link5Vertices,2));
+
+handles.user.isConnected = false;
+updateArm(hObject, handles);
 % Update handles structure
 guidata(hObject, handles);
 
@@ -106,9 +140,13 @@ if ~isempty(open_ports)
     fclose(open_ports);
 end
 
-com_port = get(handles.edit_comport,'String');
+com_port = sprintf('COM%s', get(handles.edit_comport,'String'));
 
-fprintf('TODO: open a serial connection to the robot arm on: COM%s.\n',com_port);
+fprintf('opening serial connection on: %s.\n',com_port);
+
+handles.user.s = serial(com_port, 'BaudRate', 9600, 'Terminator', 10, 'Timeout', 5);
+handles.user.isConnected = true;
+fopen(handles.user.s);
 guidata(hObject,handles);
 
 
@@ -117,10 +155,12 @@ function pushbutton_closecom_Callback(hObject, eventdata, handles)
 % hObject    handle to pushbutton_closecom (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
+fprintf('Closing serial connection\n');
 open_ports = instrfind('Type','serial','Status','open');
 if ~isempty(open_ports)
     fclose(open_ports);
 end
+handles.user.isConnected = false;
 
 
 % --- Executes on slider movement.
@@ -131,15 +171,17 @@ function slider_jointChange_Callback(hObject, eventdata, handles)
 
 % Hints: get(hObject,'Value') returns position of slider
 %        get(hObject,'Min') and get(hObject,'Max') to determine range of slider
-jointAngles(1) = round(get(handles.slider_joint1,'Value'));
-jointAngles(2) = round(get(handles.slider_joint2,'Value'));
-jointAngles(3) = round(get(handles.slider_joint3,'Value'));
-jointAngles(4) = round(get(handles.slider_joint4,'Value'));
-jointAngles(5) = round(get(handles.slider_joint5,'Value'));
+handles.user.jointAngles(1) = round(get(handles.slider_joint1,'Value'));
+handles.user.jointAngles(2) = round(get(handles.slider_joint2,'Value'));
+handles.user.jointAngles(3) = round(get(handles.slider_joint3,'Value'));
+handles.user.jointAngles(4) = round(get(handles.slider_joint4,'Value'));
+handles.user.jointAngles(5) = round(get(handles.slider_joint5,'Value'));
 
-jointAnglesStr = sprintf('%d %d %d %d %d',jointAngles);
+jointAnglesStr = sprintf('%d %d %d %d %d',handles.user.jointAngles);
 set(handles.text_anglevalues, 'String', jointAnglesStr);
 
+updateArm(hObject, handles);
+guidata(hObject, handles);
 
 
 % --- Executes during object creation, after setting all properties.
@@ -211,7 +253,11 @@ function slider_gripper_Callback(hObject, eventdata, handles)
 
 % Hints: get(hObject,'Value') returns position of slider
 %        get(hObject,'Min') and get(hObject,'Max') to determine range of slider
-fprintf('TODO: Send a gripper command to the serial robot arm if open.\n');
+fprintf('GRIPPER %d\n', get(handles.slider_gripper, 'Value'));
+if handles.user.isConnected
+    fprintf(handles.user.s, 'GRIPPER %d\n', get(handles.slider_gripper, 'Value'));
+end
+
 
 
 % --- Executes during object creation, after setting all properties.
@@ -223,4 +269,51 @@ function slider_gripper_CreateFcn(hObject, eventdata, handles)
 % Hint: slider controls usually have a light gray background.
 if isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
     set(hObject,'BackgroundColor',[.9 .9 .9]);
+end
+
+
+
+function updateArm(hObject, handles)
+
+% DONE: Make sure the handles.user.jointAngles values are set.
+
+% DONE: Create the five homogeneous transformation matrices.
+[A1,A2,A3,A4,A5] = makeHomogeneousTransformations(handles.user.jointAngles(1),...
+    handles.user.jointAngles(2),handles.user.jointAngles(3),handles.user.jointAngles(4),...
+    handles.user.jointAngles(5));
+
+% DONE: Use the A matricies to form the T0_n matricies.
+T0_1 = A1;
+T0_2 = A1 * A2;
+T0_3 = A1 * A2 * A3;
+T0_4 = A1 * A2 * A3 * A4;
+T0_5 = A1 * A2 * A3 * A4 * A5;
+
+% DONE: Use the T matricies to transform the patch vertices
+link1verticesWRTground = T0_1 * handles.user.link1Vertices;
+link2verticesWRTground = T0_2 * handles.user.link2Vertices;
+link3verticesWRTground = T0_3 * handles.user.link3Vertices;
+link4verticesWRTground = T0_4 * handles.user.link4Vertices;
+link5verticesWRTground = T0_5 * handles.user.link5Vertices;
+
+% DONE: Update the patches with the new vertices
+set(handles.user.link1Patch,'Vertices', link1verticesWRTground(1:3,:)');
+set(handles.user.link2Patch,'Vertices', link2verticesWRTground(1:3,:)');
+set(handles.user.link3Patch,'Vertices', link3verticesWRTground(1:3,:)');
+set(handles.user.link4Patch,'Vertices', link4verticesWRTground(1:3,:)');
+set(handles.user.link5Patch,'Vertices', link5verticesWRTground(1:3,:)');
+
+
+% Optional code (if you want to display the XYZ of the gripper).
+% Update x, y, and z using the gripper (end effector) origin.
+dhOrigin = [0 0 0 1]';
+eeWRTground = T0_5 * dhOrigin;
+set(handles.text_x, 'String', sprintf('%.3f"', eeWRTground(1)));
+set(handles.text_y, 'String', sprintf('%.3f"', eeWRTground(2)));
+set(handles.text_z, 'String', sprintf('%.3f"', eeWRTground(3)));
+
+fprintf('POSITION %d %d %d %d %d\n', handles.user.jointAngles);
+
+if handles.user.isConnected
+    fprintf(handles.user.s, 'POSITION %d %d %d %d %d\n', handles.user.jointAngles);
 end
