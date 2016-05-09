@@ -31,6 +31,7 @@ public class MainActivity extends RobotActivity {
         ball3.setText("---");
         sendCommand("R");
         sendCommand("ATTACH 111111");
+        sendCommand(getString(R.string.position_command, 0, 90, 0, -180, 90));
     }
 
     public void changeColor(View view) {
@@ -59,8 +60,12 @@ public class MainActivity extends RobotActivity {
     }
 
     public void positionTest(View view) {
-        // TODO: Send command to arduino to get ball colorz
+        // DONE: Send command to arduino to get ball colorz
         sendCommand("ATTACH 111111");
+        dropped1 = false;
+        dropped2 = false;
+        dropped3 = false;
+        sendCommand("CUSTOM QA");
     }
 
     public void goClick(View view) {
@@ -69,7 +74,12 @@ public class MainActivity extends RobotActivity {
         sendCommand("ATTACH 111111");
         dropOffBY();
         // drive forward 1 sec
-        sendCommand(getString(R.string.wheel_speed_command, "FORWARD", 150, "FORWARD", 150));
+        mCommandHandler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                sendCommand(getString(R.string.wheel_speed_command, "FORWARD", 150, "FORWARD", 150));
+            }
+        }, 4000);
         // drop of white (if there)
         mCommandHandler.postDelayed(new Runnable() {
             @Override
@@ -80,13 +90,13 @@ public class MainActivity extends RobotActivity {
                 dropOffW();
                 // drive forward 1 sec
             }
-        }, 1000);
+        }, 5500);
         mCommandHandler.postDelayed(new Runnable() {
             @Override
             public void run() {
                 sendCommand(getString(R.string.wheel_speed_command, "FORWARD", 150, "FORWARD", 150));
             }
-        }, 3500);
+        }, 10000);
         mCommandHandler.postDelayed(new Runnable() {
             @Override
             public void run() {
@@ -94,15 +104,14 @@ public class MainActivity extends RobotActivity {
                 sendCommand(getString(R.string.wheel_speed_command, "BRAKE", 0, "BRAKE", 0));
                 // knock off green/red
                 dropOffRG();
-                // drive backward 2 sec
             }
-        }, 4500);
+        }, 11000);
         mCommandHandler.postDelayed(new Runnable() {
             @Override
             public void run() {
                 sendCommand(getString(R.string.wheel_speed_command, "REVERSE", 150, "REVERSE", 150));
             }
-        }, 7000);
+        }, 15000);
         // drop of green/red
         // drive backward 2 sec
         mCommandHandler.postDelayed(new Runnable() {
@@ -110,41 +119,51 @@ public class MainActivity extends RobotActivity {
             public void run() {
                 // brake
                 sendCommand(getString(R.string.wheel_speed_command, "BRAKE", 0, "BRAKE", 0));
+                Toast.makeText(MainActivity.this, getString(R.string.droppedStat, dropped1 + "", dropped2 + "", dropped3 + ""), Toast.LENGTH_LONG).show();
             }
-        }, 9000);
+        }, 17000);
     }
 
     private void dropOffBY() {
         if (BYLoc == 1) {
+            Toast.makeText(this, "Dropping of BY from 1", Toast.LENGTH_SHORT).show();
             drop1Script();
         } else if (BYLoc == 2) {
+            Toast.makeText(this, "Dropping of BY from 2", Toast.LENGTH_SHORT).show();
             drop2Script();
         } else if (BYLoc == 3) {
+            Toast.makeText(this, "Dropping of BY from 3", Toast.LENGTH_SHORT).show();
             drop3Script();
         }
     }
 
     private void dropOffW() {
         if (WLoc == 1) {
+            Toast.makeText(this, "Dropping of W from 1", Toast.LENGTH_SHORT).show();
             drop1Script();
         } else if (WLoc == 2) {
+            Toast.makeText(this, "Dropping of W from 2", Toast.LENGTH_SHORT).show();
             drop2Script();
         } else if (WLoc == 3) {
+            Toast.makeText(this, "Dropping of W from 3", Toast.LENGTH_SHORT).show();
             drop3Script();
         }
     }
 
     private void dropOffRG() {
         if (RGLoc == 1) {
+            Toast.makeText(this, "Dropping of RG from 1", Toast.LENGTH_SHORT).show();
             drop1Script();
         } else if (RGLoc == 2) {
+            Toast.makeText(this, "Dropping of RG from 2", Toast.LENGTH_SHORT).show();
             drop2Script();
         } else if (RGLoc == 3) {
+            Toast.makeText(this, "Dropping of RG from 3", Toast.LENGTH_SHORT).show();
             drop3Script();
         }
     }
 
-    public void drop1Script() {
+    public void drop3Script() {
         sendCommand(getString(R.string.position_command, 0, 90, 0, -180, 70));
         sendCommand(getString(R.string.gripper_command, 50));
         mCommandHandler.postDelayed(new Runnable() {
@@ -160,68 +179,80 @@ public class MainActivity extends RobotActivity {
 
                 sendCommand(getString(R.string.position_command, -16, 65, -35, -132, 70));
             }
-        }, 500);
+        }, 1500);
         mCommandHandler.postDelayed(new Runnable() {
             @Override
             public void run() {
 
                 sendCommand(getString(R.string.position_command, -16, 73, -35, -163, 70));
             }
-        }, 1000);
+        }, 2000);
         mCommandHandler.postDelayed(new Runnable() {
             @Override
             public void run() {
 
                 sendCommand(getString(R.string.position_command, -20, 80, 0, -180, 70));
             }
-        }, 500);
+        }, 2500);
         mCommandHandler.postDelayed(new Runnable() {
             @Override
             public void run() {
 
                 sendCommand(getString(R.string.position_command, 0, 90, 0, -180, 70));
             }
-        }, 500);
-        dropped1 = true;
+        }, 3000);
+        mCommandHandler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                sendCommand(getString(R.string.position_command, 0, 90, 0, -180, 90));
+                sendCommand("CUSTOM Q3");
+            }
+        }, 4000);
     }
 
     public void drop2Script() {
-        sendCommand(getString(R.string.position_command, 0, 90, 0, -180, 70));
+        sendCommand(getString(R.string.position_command, 0, 120, -62, -150, 0));
         sendCommand(getString(R.string.gripper_command, 50));
         mCommandHandler.postDelayed(new Runnable() {
             @Override
             public void run() {
-                sendCommand(getString(R.string.position_command, 4, 80, 0, -180, 70));
+                sendCommand(getString(R.string.position_command, 0, 20, -70, -90, 90));
             }
         }, 1000);
         mCommandHandler.postDelayed(new Runnable() {
             @Override
             public void run() {
-                sendCommand(getString(R.string.position_command, 8, 80, -50, -142, 70));
+                sendCommand(getString(R.string.gripper_command, 25));
             }
-        }, 500);
+        }, 1500);
         mCommandHandler.postDelayed(new Runnable() {
             @Override
             public void run() {
                 sendCommand(getString(R.string.position_command, 8, 80, -50, -162, 70));
             }
-        }, 1000);
+        }, 2000);
         mCommandHandler.postDelayed(new Runnable() {
             @Override
             public void run() {
                 sendCommand(getString(R.string.position_command, 4, 80, 0, -180, 70));
             }
-        }, 500);
+        }, 2500);
         mCommandHandler.postDelayed(new Runnable() {
             @Override
             public void run() {
-                sendCommand(getString(R.string.position_command, 0, 90, 0, -180, 70));
+                sendCommand(getString(R.string.position_command, 0, 90, 0, -90, 90));
             }
-        }, 500);
-        dropped2 = true;
+        }, 3000);
+        mCommandHandler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                sendCommand(getString(R.string.position_command, 0, 90, 0, -180, 90));
+                sendCommand("CUSTOM Q2");
+            }
+        }, 4000);
     }
 
-    public void drop3Script() {
+    public void drop1Script() {
         sendCommand(getString(R.string.position_command, 0, 90, 0, -180, 70));
         sendCommand(getString(R.string.gripper_command, 50));
         mCommandHandler.postDelayed(new Runnable() {
@@ -235,27 +266,32 @@ public class MainActivity extends RobotActivity {
             public void run() {
                 sendCommand(getString(R.string.position_command, 35, 69, -46, -132, 70));
             }
-        }, 500);
+        }, 1500);
         mCommandHandler.postDelayed(new Runnable() {
             @Override
             public void run() {
                 sendCommand(getString(R.string.position_command, 36, 83, -41, -168, 70));
             }
-        }, 1000);
+        }, 2000);
         mCommandHandler.postDelayed(new Runnable() {
             @Override
             public void run() {
                 sendCommand(getString(R.string.position_command, 32, 80, 0, -180, 70));
             }
-        }, 500);
+        }, 2500);
         mCommandHandler.postDelayed(new Runnable() {
             @Override
             public void run() {
                 sendCommand(getString(R.string.position_command, 0, 90, 0, -180, 70));
             }
-        }, 500);
-
-        dropped3 = true;
+        }, 3000);
+        mCommandHandler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                sendCommand(getString(R.string.position_command, 0, 90, 0, -180, 90));
+                sendCommand("CUSTOM Q1");
+            }
+        }, 4000);
     }
 
     @Override
@@ -288,6 +324,20 @@ public class MainActivity extends RobotActivity {
             WLoc = index;
         else if (ballColor.equals("Blue") || ballColor.equals("Yellow"))
             BYLoc = index;
+        else{
+            Toast.makeText(MainActivity.this, "Ball Dropped off", Toast.LENGTH_SHORT).show();
+            switch (index) {
+                case 1:
+                    dropped1 = true;
+                    break;
+                case 2:
+                    dropped2 = true;
+                    break;
+                case 3:
+                    dropped3 = true;
+                    break;
+            }
+        }
     }
 
     private String getBallColor(char c) {

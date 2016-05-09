@@ -33,13 +33,13 @@ public class MainActivity extends RobotActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        mGpsTextView = (TextView) findViewById(R.id.target_textView);
-        mSensorHeadingTextView = (TextView) findViewById(R.id.xy_textView);
+        mGpsTextView = (TextView) findViewById(R.id.gps_textView);
+        mSensorHeadingTextView = (TextView) findViewById(R.id.sensor_textView);
         mStateTextView = (TextView) findViewById(R.id.state_textView);
-        mXYTextView = (TextView) findViewById(R.id.sensor_textView);
-        mTargetTextView = (TextView) findViewById(R.id.gps_textView);
+        mXYTextView = (TextView) findViewById(R.id.xy_textView);
+        mTargetTextView = (TextView) findViewById(R.id.target_textView);
         mTimeTextView = (TextView) findViewById(R.id.time_textView);
-        mCommandTextView = (TextView) findViewById(R.id.state_textView);
+        mCommandTextView = (TextView) findViewById(R.id.command_textView);
         mTurnTextView = (TextView) findViewById(R.id.turn_textView);
         resetButton(null);
         goingAwayCount = 0;
@@ -54,8 +54,11 @@ public class MainActivity extends RobotActivity {
         double curDist = NavUtils.getDistance(x, y, 0, 0);
         if (curDist > lastDist) {
             goingAwayCount++;
+        } else {
+            goingAwayCount = 0;
         }
-        if (goingAwayCount > 3) {
+        if (goingAwayCount >= 3) {
+            goingAwayCount = 0;
             setState(State.CORRECTIVE_SCRIPT);
         }
         lastDist = curDist;
@@ -187,6 +190,17 @@ public class MainActivity extends RobotActivity {
             case SEEKING_HOME:
                 double targetHeading = NavUtils.getTargetHeading(mGuessX, mGuessY, 0, 0);
                 mTargetTextView.setText(getString(R.string.degrees_format, targetHeading));
+                double d = Math.abs(targetHeading - mCurrentSensorHeading) % 360;
+                double r = d > 180 ? 360 - d : d;
+                int sign = (targetHeading - mCurrentSensorHeading >= 0 && targetHeading - mCurrentSensorHeading <= 180) || (targetHeading - mCurrentSensorHeading <=-180 && targetHeading - mCurrentSensorHeading>= -360) ? 1 : -1;
+                r *= sign;
+                if (r >= 0) {
+                    mTurnTextView.setText(getString(R.string.left_format, Math.abs(r)));
+                    mCommandTextView.setText(getString(R.string.wheel_speed_command, "FORWARD", Math.round(255-Math.abs(r)), "FORWARD", 255));
+                } else {
+                    mTurnTextView.setText(getString(R.string.right_format, Math.abs(r)));
+                    mCommandTextView.setText(getString(R.string.wheel_speed_command, "FORWARD", 255, "FORWARD", Math.round(255-Math.abs(r))));
+                }
                 break;
         }
     }
