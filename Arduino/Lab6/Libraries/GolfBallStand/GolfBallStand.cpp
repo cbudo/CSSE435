@@ -180,7 +180,22 @@ int GolfBallStand::determineBallColor(int location) {
   int metaFive = redReading + greenReading - blueReading; // Smaller the number, the more yellow it is
   int metaSix = greenReading - blueReading; // Smaller the number, the more green it is.
   //WARNING: MetaSix is consistent on a per-sensor basis. Thus, there are three separate thresholds.
-
+	//Serial.print(metaOne);
+	//Serial.print(",");
+	//Serial.print(metaTwo);
+	//Serial.print(",");
+	
+	//Serial.print(metaThree);
+	//Serial.print(",");
+	
+	//Serial.print(metaFour);
+	//Serial.print(",");
+	
+	//Serial.print(metaFive);
+	//Serial.print(",");
+	
+	//Serial.println(metaSix);
+	
 
   if (metaOne < META_1_MAX_THR){
       // Serial.print("Meta1= ");
@@ -192,15 +207,22 @@ int GolfBallStand::determineBallColor(int location) {
     // Serial.println(metaOne);
     return BALL_WHITE;
   }
+  if ((location == LOCATION_2) && metaTwo < 1000 && metaFour < 50 && metaThree > 2000){
+	  return BALL_WHITE;
+  }
   if (metaThree > META_3_MIN_THR){
     // Serial.print("Meta3= ");
     // Serial.println(metaThree);
-    if ((location == LOCATION_2) || (metaThree > 2700)){
+	if ((location== LOCATION_1) && metaThree >3200){
+		return BALL_BLACK;
+	}
+	
+    if ((location == LOCATION_2)){
 		if (metaFour < 80){
 			return BALL_BLACK;
 		}
     }
-	if ((location == LOCATION_3) && (metaFour < 0)){
+	if ((location == LOCATION_3) && (metaFour < 50)){
 		return BALL_BLACK;
 	}
   }
