@@ -196,8 +196,13 @@ int GolfBallStand::determineBallColor(int location) {
     // Serial.print("Meta3= ");
     // Serial.println(metaThree);
     if ((location == LOCATION_2) || (metaThree > 2700)){
-      return BALL_BLACK;
+		if (metaFour < 80){
+			return BALL_BLACK;
+		}
     }
+	if ((location == LOCATION_3) && (metaFour < 0)){
+		return BALL_BLACK;
+	}
   }
   if (metaFour < META_4_MAX_THR){
     // Serial.print("Meta4= ");

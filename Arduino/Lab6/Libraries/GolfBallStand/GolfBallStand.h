@@ -89,7 +89,7 @@
 #define META_5_MAX_THR 150
 // for reasons unknown, meta6 has about +125 difference between 1 and 2, but loc3 is really lame
 #define META_6_LOC_3_THR 50
-#define META_6_LOC_2_THR -325
+#define META_6_LOC_2_THR -290
 #define META_6_LOC_1_THR -200
 
 
