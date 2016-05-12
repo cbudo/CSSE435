@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="#444"
+    android:padding="5dp">
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textColor="#fff"
+        android:text="Debug GPS Buttons"
+        android:paddingEnd="@dimen/activity_vertical_margin"
+        android:paddingStart="@dimen/activity_vertical_margin"
+        android:paddingLeft="@dimen/activity_horizontal_margin"
+        android:paddingRight="@dimen/activity_horizontal_margin"
+        />
+    <TableLayout
+        android:id="@+id/fake_gps_button_table"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        >
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <Button
+                style="@style/ColorButton.HorzLinearLayout"
+                android:background="@drawable/black_button"
+                android:onClick="handleFakeGpsF0"
+                android:text="GPS F0" />
+
+            <Button
+                style="@style/ColorButton.HorzLinearLayout"
+                android:background="@drawable/black_button"
+                android:onClick="handleFakeGpsF1"
+                android:text="GPS F1" />
+
+            <Button
+                style="@style/ColorButton.HorzLinearLayout"
+                android:background="@drawable/black_button"
+                android:onClick="handleFakeGpsF2"
+                android:text="GPS F2" />
+
+            <Button
+                style="@style/ColorButton.HorzLinearLayout"
+                android:background="@drawable/black_button"
+                android:onClick="handleFakeGpsF3"
+                android:text="GPS F3" />
+        </TableRow>
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <Button
+                style="@style/ColorButton.HorzLinearLayout"
+                android:background="@drawable/black_button"
+                android:onClick="handleFakeGpsH0"
+                android:text="GPS H0" />
+
+            <Button
+                style="@style/ColorButton.HorzLinearLayout"
+                android:background="@drawable/black_button"
+                android:onClick="handleFakeGpsH1"
+                android:text="GPS H1" />
+
+            <Button
+                style="@style/ColorButton.HorzLinearLayout"
+                android:background="@drawable/black_button"
+                android:onClick="handleFakeGpsH2"
+                android:text="GPS H2" />
+
+            <Button
+                style="@style/ColorButton.HorzLinearLayout"
+                android:background="@drawable/black_button"
+                android:onClick="handleFakeGpsH3"
+                android:text="GPS H3" />
+        </TableRow>
+    </TableLayout>
+</RelativeLayout>
