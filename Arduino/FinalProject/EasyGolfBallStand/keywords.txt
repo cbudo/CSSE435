@@ -1,0 +1,21 @@
+#######################################
+# Syntax Coloring Map For EasyGolfBallStand
+#######################################
+
+#####################################
+# Datatypes (KEYWORD1)
+#######################################
+
+EasyGolfBallStand	KEYWORD1
+
+#######################################
+# Methods and Functions (KEYWORD2)
+#######################################
+
+setLedState	KEYWORD2
+getAnalogReading	KEYWORD2
+determineBallColor	KEYWORD2
+
+#######################################
+# Constants (LITERAL1)
+#######################################
