@@ -7,6 +7,7 @@ import java.util.TimerTask;
 import android.location.Location;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.annotation.NonNull;
 import android.view.WindowManager;
 
 /** 
@@ -250,6 +251,12 @@ public class RobotActivity extends AccessoryActivity implements FieldGpsListener
   @Override
   public void onSensorChanged(double fieldHeading, float[] orientationValues) {
     mCurrentSensorHeading = fieldHeading;
+  }
+
+  @Override
+  public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+    super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+    mFieldGps.requestLocationUpdates(this);
   }
 
   @Override
