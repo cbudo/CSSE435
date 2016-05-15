@@ -31,6 +31,7 @@ public class MainActivity extends RobotActivity {
         ball3.setText("---");
         sendCommand("R");
         sendCommand("ATTACH 111111");
+        sendCommand(getString(R.string.gripper_command, 50));
         sendCommand(getString(R.string.position_command, 0, 90, 0, -180, 90));
     }
 
@@ -62,16 +63,36 @@ public class MainActivity extends RobotActivity {
     public void positionTest(View view) {
         // DONE: Send command to arduino to get ball colorz
         sendCommand("ATTACH 111111");
+        sendCommand(getString(R.string.gripper_command, 50));
         dropped1 = false;
         dropped2 = false;
         dropped3 = false;
-        sendCommand("CUSTOM QA");
+        sendCommand("CUSTOM Q1");
+        mCommandHandler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                sendCommand("CUSTOM Q2");
+            }
+        }, 500);
+        mCommandHandler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                sendCommand("CUSTOM Q3");
+            }
+        }, 1000);
+        mCommandHandler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                sendCommand("CUSTOM QX");
+            }
+        }, 1500);
     }
 
     public void goClick(View view) {
         // based on colors, move forward and knock balls off
         // drop of yellow/blue
         sendCommand("ATTACH 111111");
+        sendCommand(getString(R.string.gripper_command, 50));
         dropOffBY();
         // drive forward 1 sec
         mCommandHandler.postDelayed(new Runnable() {
@@ -163,158 +184,117 @@ public class MainActivity extends RobotActivity {
         }
     }
 
-    public void drop3Script() {
-        sendCommand(getString(R.string.position_command, 0, 90, 0, -180, 70));
-        sendCommand(getString(R.string.gripper_command, 50));
+    public void drop1Script(View view) {
+        sendCommand("ATTACH 111111");
+        drop1Script();
+    }
+
+    public void drop2Script(View view) {
+        sendCommand("ATTACH 111111");
+        drop2Script();
+    }
+
+    public void drop3Script(View view) {
+        sendCommand("ATTACH 111111");
+        drop3Script();
+    }
+
+
+    public void drop1Script() {
+        sendCommand(getString(R.string.position_command, 33, 87, 80, -67, 157));
         mCommandHandler.postDelayed(new Runnable() {
             @Override
             public void run() {
-
-                sendCommand(getString(R.string.position_command, -20, 80, 0, -180, 70));
+                sendCommand(getString(R.string.position_command, 33, 87, 80, 0, 157));
             }
         }, 1000);
         mCommandHandler.postDelayed(new Runnable() {
             @Override
             public void run() {
-
-                sendCommand(getString(R.string.position_command, -16, 65, -35, -132, 70));
+                sendCommand(getString(R.string.position_command, 33, 80, 80, 0, 157));
             }
         }, 1500);
         mCommandHandler.postDelayed(new Runnable() {
             @Override
             public void run() {
-
-                sendCommand(getString(R.string.position_command, -16, 73, -35, -163, 70));
+                sendCommand(getString(R.string.position_command, 50, 87, 80, -67, 157));
             }
         }, 2000);
         mCommandHandler.postDelayed(new Runnable() {
             @Override
             public void run() {
-
-                sendCommand(getString(R.string.position_command, -20, 80, 0, -180, 70));
-            }
-        }, 2500);
-        mCommandHandler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-
-                sendCommand(getString(R.string.position_command, 0, 90, 0, -180, 70));
+                sendCommand(getString(R.string.position_command, 33, 87, 80, -67, 157));
+                sendCommand("CUSTOM Q1");
             }
         }, 3000);
-        mCommandHandler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                sendCommand(getString(R.string.position_command, 0, 90, 0, -180, 90));
-                sendCommand("CUSTOM Q3");
-            }
-        }, 4000);
     }
 
     public void drop2Script() {
-        sendCommand(getString(R.string.position_command, 0, 120, -62, -150, 0));
-        sendCommand(getString(R.string.gripper_command, 50));
+        sendCommand(getString(R.string.position_command, 3, 77, 81, -54, 153));
         mCommandHandler.postDelayed(new Runnable() {
             @Override
             public void run() {
-                sendCommand(getString(R.string.position_command, 0, 20, -70, -90, 90));
+                sendCommand(getString(R.string.position_command, 3, 77, 81, -54, 153));
             }
         }, 1000);
         mCommandHandler.postDelayed(new Runnable() {
             @Override
             public void run() {
-                sendCommand(getString(R.string.gripper_command, 25));
-            }
-        }, 1500);
-        mCommandHandler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                sendCommand(getString(R.string.position_command, 8, 80, -50, -162, 70));
+                sendCommand(getString(R.string.position_command, 3, 78, 83, -25, 152));
             }
         }, 2000);
         mCommandHandler.postDelayed(new Runnable() {
             @Override
             public void run() {
-                sendCommand(getString(R.string.position_command, 4, 80, 0, -180, 70));
+                sendCommand(getString(R.string.position_command, 3, 47, 83, -25, 153));
             }
         }, 2500);
         mCommandHandler.postDelayed(new Runnable() {
             @Override
             public void run() {
-                sendCommand(getString(R.string.position_command, 0, 90, 0, -90, 90));
-            }
-        }, 3000);
-        mCommandHandler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                sendCommand(getString(R.string.position_command, 0, 90, 0, -180, 90));
+                sendCommand(getString(R.string.position_command, 3, 77, 81, -54, 153));
                 sendCommand("CUSTOM Q2");
             }
-        }, 4000);
+        }, 3000);
     }
 
-    public void drop1Script() {
-        sendCommand(getString(R.string.position_command, 0, 90, 0, -180, 70));
-        sendCommand(getString(R.string.gripper_command, 50));
+    public void drop3Script() {
+        sendCommand(getString(R.string.position_command, -20, 82, 80, -67, 157));
         mCommandHandler.postDelayed(new Runnable() {
             @Override
             public void run() {
-                sendCommand(getString(R.string.position_command, 32, 80, 0, -180, 70));
+
+                sendCommand(getString(R.string.position_command, -20, 82, 80, -67, 157));
             }
         }, 1000);
         mCommandHandler.postDelayed(new Runnable() {
             @Override
             public void run() {
-                sendCommand(getString(R.string.position_command, 35, 69, -46, -132, 70));
+
+                sendCommand(getString(R.string.position_command, -20, 82, 80, 0, 157));
             }
         }, 1500);
         mCommandHandler.postDelayed(new Runnable() {
             @Override
             public void run() {
-                sendCommand(getString(R.string.position_command, 36, 83, -41, -168, 70));
+
+                sendCommand(getString(R.string.position_command, -20, 73, 80, 0, 157));
             }
         }, 2000);
         mCommandHandler.postDelayed(new Runnable() {
             @Override
             public void run() {
-                sendCommand(getString(R.string.position_command, 32, 80, 0, -180, 70));
+
+                sendCommand(getString(R.string.position_command, -20, 82, 80, -67, 157));
             }
         }, 2500);
         mCommandHandler.postDelayed(new Runnable() {
             @Override
             public void run() {
-                sendCommand(getString(R.string.position_command, 0, 90, 0, -180, 70));
+                sendCommand(getString(R.string.position_command, -20, 82, 80, -67, 157));
+                sendCommand("CUSTOM Q3");
             }
         }, 3000);
-        mCommandHandler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                sendCommand(getString(R.string.position_command, 0, 90, 0, -180, 90));
-                sendCommand("CUSTOM Q1");
-            }
-        }, 4000);
-    }
-
-    @Override
-    protected void onCommandReceived(String receivedCommand) {
-        super.onCommandReceived(receivedCommand);
-        for (String s :
-                receivedCommand.split(",")) {
-            String ballColor = getBallColor(s.charAt(0));
-            switch (s.charAt(1)) {
-                case '1':
-                    ball1.setText(ballColor);
-                    setBallPos(ballColor, 1);
-                    break;
-                case '2':
-                    ball2.setText(ballColor);
-                    setBallPos(ballColor, 2);
-                    break;
-                case '3':
-                    ball3.setText(ballColor);
-                    setBallPos(ballColor, 3);
-                    break;
-            }
-        }
     }
 
     private void setBallPos(String ballColor, int index) {
@@ -324,7 +304,7 @@ public class MainActivity extends RobotActivity {
             WLoc = index;
         else if (ballColor.equals("Blue") || ballColor.equals("Yellow"))
             BYLoc = index;
-        else{
+        else {
             Toast.makeText(MainActivity.this, "Ball Dropped off", Toast.LENGTH_SHORT).show();
             switch (index) {
                 case 1:
@@ -358,5 +338,28 @@ public class MainActivity extends RobotActivity {
                 return "White";
         }
         return "None";
+    }
+
+    @Override
+    protected void onCommandReceived(String receivedCommand) {
+        super.onCommandReceived(receivedCommand);
+        for (String s :
+                receivedCommand.split(",")) {
+            String ballColor = getBallColor(s.charAt(0));
+            switch (s.charAt(1)) {
+                case '1':
+                    ball1.setText(ballColor);
+                    setBallPos(ballColor, 1);
+                    break;
+                case '2':
+                    ball2.setText(ballColor);
+                    setBallPos(ballColor, 2);
+                    break;
+                case '3':
+                    ball3.setText(ballColor);
+                    setBallPos(ballColor, 3);
+                    break;
+            }
+        }
     }
 }

@@ -400,8 +400,55 @@
         android:layout_height="wrap_content"
         android:layout_below="@id/tableLayout"
         android:text="Go!"
-        android:id="@+id/button3"
+        android:id="@+id/goButton"
         android:onClick="goClick" />
+
+    <TableLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/tableLayout2"
+        android:layout_below="@id/goButton" >
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" >
+
+            <Button
+                android:id="@+id/button4"
+                android:layout_column="1"
+                android:text="Drop 1"
+                android:onClick="drop1Script"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+            <Space
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1" />
+
+            <Button
+                android:id="@+id/button5"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_column="3"
+                android:text="Drop 2"
+                android:onClick="drop2Script" />
+
+            <Space
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1" />
+
+            <Button
+                android:id="@+id/button6"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_column="5"
+                android:text="Drop 3"
+                android:onClick="drop3Script" />
+        </TableRow>
+
+    </TableLayout>
 
 
 </RelativeLayout>
