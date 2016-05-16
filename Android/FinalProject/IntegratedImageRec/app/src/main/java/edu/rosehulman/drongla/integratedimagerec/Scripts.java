@@ -4,11 +4,11 @@ package edu.rosehulman.drongla.integratedimagerec;
 import android.os.Handler;
 import android.widget.Toast;
 
-import edu.rosehulman.drongla.integratedimagerec.GolfBallDeliveryActivity.BallColor;
 import edu.rosehulman.me435.NavUtils;
 import edu.rosehulman.me435.RobotActivity;
 
 public class Scripts {
+    private int RGLoc, WLoc, BYLoc;
 
     /**
      * Reference to the primary activity.
@@ -88,8 +88,8 @@ public class Scripts {
                 if (mGolfBallDeliveryActivity.mWhiteBallLocation != 0) {
                     removeBallAtLocation(mGolfBallDeliveryActivity.mWhiteBallLocation);
                 }
-                if (mGolfBallDeliveryActivity.mState == GolfBallDeliveryActivity.State.FAR_BALL_SCRIPT) {
-                    mGolfBallDeliveryActivity.setState(GolfBallDeliveryActivity.State.DRIVE_TOWARDS_HOME);
+                if (mGolfBallDeliveryActivity.mState == GolfBallDeliveryActivity.State.FAR_IMAGE_REC) {
+                    mGolfBallDeliveryActivity.setState(GolfBallDeliveryActivity.State.CHECK_DROPPED_FAR);
                 }
             }
         }, ARM_REMOVAL_TIME_MS);
@@ -102,26 +102,108 @@ public class Scripts {
      * Removes a ball from the golf ball stand.
      */
     public void removeBallAtLocation(final int location) {
-        // TODO: Replace with a script that might actually remove a ball. :)
+        // DONE: Replace with a script that might actually remove a ball. :)
+        switch (location) {
+            case 1:
+                drop1Script();
+                break;
+            case 2:
+                drop2Script();
+                break;
+            case 3:
+                drop3Script();
+                break;
+            default:
+                Toast.makeText(mGolfBallDeliveryActivity, "Not a location", Toast.LENGTH_SHORT).show();
+                break;
+        }
+    }
 
-        mGolfBallDeliveryActivity.sendCommand("ATTACH 111111"); // Just in case
+    public void drop1Script() {
+        mGolfBallDeliveryActivity.sendCommand(mGolfBallDeliveryActivity.getString(R.string.position_command, 33, 87, 80, -67, 157));
         mCommandHandler.postDelayed(new Runnable() {
             @Override
             public void run() {
-                mGolfBallDeliveryActivity.sendCommand("POSITION 83 90 0 -90 90");
+                mGolfBallDeliveryActivity.sendCommand(mGolfBallDeliveryActivity.getString(R.string.position_command, 33, 87, 80, 0, 157));
             }
-        }, 10);
+        }, 1000);
         mCommandHandler.postDelayed(new Runnable() {
             @Override
             public void run() {
-                mGolfBallDeliveryActivity.sendCommand("POSITION 90 141 -60 -180 169");
+                mGolfBallDeliveryActivity.sendCommand(mGolfBallDeliveryActivity.getString(R.string.position_command, 33, 80, 80, 0, 157));
+            }
+        }, 1500);
+        mCommandHandler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                mGolfBallDeliveryActivity.sendCommand(mGolfBallDeliveryActivity.getString(R.string.position_command, 50, 87, 80, -67, 157));
             }
         }, 2000);
         mCommandHandler.postDelayed(new Runnable() {
             @Override
             public void run() {
-                mGolfBallDeliveryActivity.setLocationToColor(location, BallColor.NONE);
+                mGolfBallDeliveryActivity.sendCommand(mGolfBallDeliveryActivity.getString(R.string.position_command, 33, 87, 80, -67, 157));
+                mGolfBallDeliveryActivity.sendCommand("CUSTOM Q1");
             }
-        }, ARM_REMOVAL_TIME_MS);
+        }, 3000);
     }
+
+    public void drop2Script() {
+        mGolfBallDeliveryActivity.sendCommand(mGolfBallDeliveryActivity.getString(R.string.position_command, 3, 77, 81, -54, 153));
+        mCommandHandler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                mGolfBallDeliveryActivity.sendCommand(mGolfBallDeliveryActivity.getString(R.string.position_command, 3, 77, 81, -54, 153));
+            }
+        }, 1000);
+        mCommandHandler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                mGolfBallDeliveryActivity.sendCommand(mGolfBallDeliveryActivity.getString(R.string.position_command, 3, 78, 83, -25, 152));
+            }
+        }, 2000);
+        mCommandHandler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                mGolfBallDeliveryActivity.sendCommand(mGolfBallDeliveryActivity.getString(R.string.position_command, 3, 47, 83, -25, 153));
+            }
+        }, 2500);
+        mCommandHandler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                mGolfBallDeliveryActivity.sendCommand(mGolfBallDeliveryActivity.getString(R.string.position_command, 3, 77, 81, -54, 153));
+                mGolfBallDeliveryActivity.sendCommand("CUSTOM Q2");
+            }
+        }, 3000);
+    }
+
+    public void drop3Script() {
+        mGolfBallDeliveryActivity.sendCommand(mGolfBallDeliveryActivity.getString(R.string.position_command, -20, 82, 80, -67, 157));
+        mCommandHandler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                mGolfBallDeliveryActivity.sendCommand(mGolfBallDeliveryActivity.getString(R.string.position_command, -20, 82, 80, 0, 157));
+            }
+        }, 1000);
+        mCommandHandler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                mGolfBallDeliveryActivity.sendCommand(mGolfBallDeliveryActivity.getString(R.string.position_command, -20, 73, 80, 0, 157));
+            }
+        }, 1500);
+        mCommandHandler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                mGolfBallDeliveryActivity.sendCommand(mGolfBallDeliveryActivity.getString(R.string.position_command, -33, 73, 80, -67, 157));
+            }
+        }, 2000);
+        mCommandHandler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                mGolfBallDeliveryActivity.sendCommand(mGolfBallDeliveryActivity.getString(R.string.position_command, -20, 82, 80, -67, 157));
+                mGolfBallDeliveryActivity.sendCommand("CUSTOM Q1");
+            }
+        }, 3000);
+    }
+
 }

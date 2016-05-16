@@ -43,8 +43,12 @@ public class GolfBallDeliveryActivity extends ImageRecActivity {
     public enum State {
         READY_FOR_MISSION,
         NEAR_BALL_SCRIPT,
+        NEAR_IMAGE_REC,
+        CHECK_DROPPED_NEAR,
         DRIVE_TOWARDS_FAR_BALL,
-        FAR_BALL_SCRIPT,
+        FAR_IMAGE_REC,
+        CHECK_DROPPED_FAR,
+        CHECK_DROPPED_WHITE,
         DRIVE_TOWARDS_HOME,
         WAITING_FOR_PICKUP,
         SEEKING_HOME,
@@ -363,7 +367,7 @@ public class GolfBallDeliveryActivity extends ImageRecActivity {
             double distanceFromTarget = NavUtils.getDistance(mCurrentGpsX, mCurrentGpsY,
                     FAR_BALL_GPS_X, mFarBallGpsY);
             if (distanceFromTarget < ACCEPTED_DISTANCE_AWAY_FT) {
-                setState(State.FAR_BALL_SCRIPT);
+                setState(State.FAR_IMAGE_REC);
             }
         }
         if (mState == State.DRIVE_TOWARDS_HOME) {
@@ -617,11 +621,19 @@ public class GolfBallDeliveryActivity extends ImageRecActivity {
                 ViewFlipper flipper = (ViewFlipper) findViewById(R.id.my_view_flipper);
                 flipper.setDisplayedChild(2);
                 break;
+            case NEAR_IMAGE_REC:
+                break;
+            case CHECK_DROPPED_NEAR:
+                break;
             case DRIVE_TOWARDS_FAR_BALL:
                 // All actions handled in the loop function.
                 break;
-            case FAR_BALL_SCRIPT:
+            case FAR_IMAGE_REC:
                 mScripts.farBallScript();
+                break;
+            case CHECK_DROPPED_FAR:
+                break;
+            case CHECK_DROPPED_WHITE:
                 break;
             case DRIVE_TOWARDS_HOME:
                 // All actions handled in the loop function.
