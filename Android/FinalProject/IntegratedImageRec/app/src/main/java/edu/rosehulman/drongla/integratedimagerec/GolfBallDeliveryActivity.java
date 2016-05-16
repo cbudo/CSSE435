@@ -25,23 +25,20 @@ import android.widget.ViewFlipper;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 
-import edu.rosehulman.drongla.integratedimagerec.R;
-import edu.rosehulman.drongla.integratedimagerec.Scripts;
 import edu.rosehulman.me435.NavUtils;
-import edu.rosehulman.me435.RobotActivity;
 
 public class GolfBallDeliveryActivity extends ImageRecActivity {
 
     TextView ball1, ball2, ball3;
     private boolean dropped1, dropped2, dropped3;
-    private int RGLoc, WLoc, BYLoc;
-    
+
     /**
      * Constant used with logging that you'll see later.
      */
     public static final String TAG = "GolfBallDelivery";
     private ObjectInputStream inputStream;
     private ObjectOutputStream outputStream;
+
     /**
      * An enum used for calibration
      */
@@ -56,7 +53,7 @@ public class GolfBallDeliveryActivity extends ImageRecActivity {
     String filename = "cal.data";
     private int calibrationData[][][] = new int[7][7][3]; //  7 colors, 7 readings, 3 sensors.
     private int idMatrix[] = new int[3];
-    
+
     /**
      * An enum used for variables when a ball color needs to be referenced.
      */
@@ -234,7 +231,7 @@ public class GolfBallDeliveryActivity extends ImageRecActivity {
         mJumboXTextView = (TextView) findViewById(R.id.jumbo_x);
         mJumboYTextView = (TextView) findViewById(R.id.jumbo_y);
 
-        mJumbotronLayout = (LinearLayout)findViewById(R.id.jumbotron_linear_layout);
+        mJumbotronLayout = (LinearLayout) findViewById(R.id.jumbotron_linear_layout);
 
         // When you start using the real hardware you don't need test buttons.
         boolean hideFakeGpsButtons = false;
@@ -257,11 +254,11 @@ public class GolfBallDeliveryActivity extends ImageRecActivity {
         dropped2 = false;
         dropped3 = false;
         cal_state = CalibrationStatus.NOT_CALIBRATED;
-        calibrateButton = (Button)findViewById(R.id.calibrateButton);
-        loadCalibration = (Button)findViewById(R.id.loadCalibration);
-        debugTestBalls= (Button) findViewById(R.id.buttonDebugBallTest);
-        
-        
+        calibrateButton = (Button) findViewById(R.id.calibrateButton);
+        loadCalibration = (Button) findViewById(R.id.loadCalibration);
+        debugTestBalls = (Button) findViewById(R.id.buttonDebugBallTest);
+
+
         mScripts = new Scripts(this);
     }
 
@@ -309,20 +306,20 @@ public class GolfBallDeliveryActivity extends ImageRecActivity {
             }
         }
 
-        mJumboXTextView.setText(""+(int)mGuessX);
-        mJumboYTextView.setText(""+(int)mGuessY);
+        mJumboXTextView.setText("" + (int) mGuessX);
+        mJumboYTextView.setText("" + (int) mGuessY);
 
-        mStateTimeTextView.setText(""+getStateTimeMs()/1000);
+        mStateTimeTextView.setText("" + getStateTimeMs() / 1000);
 
         mMatchTimeTextView.setText(getString(R.string.time_format, timeRemainingSeconds / 60, timeRemainingSeconds % 60));
         mGuessXYTextView.setText("(" + (int) mGuessX + ", " + (int) mGuessY + ")");
 
-        if (mConeFound){
-            if (mConeLeftRightLocation < 0){
+        if (mConeFound) {
+            if (mConeLeftRightLocation < 0) {
                 Log.d(TAG, "Turn left some amount");
 
             }
-            if (mConeSize > 0.1){
+            if (mConeSize > 0.1) {
                 Log.d(TAG, "May want to stop - the cone is pretty big");
             }
         }
@@ -515,7 +512,7 @@ public class GolfBallDeliveryActivity extends ImageRecActivity {
                     sendCommand("CUSTOM Q3");
                 }
             }, 1000);
-        } else if (cal_state == CalibrationStatus.NOW_CALIBRATING){
+        } else if (cal_state == CalibrationStatus.NOW_CALIBRATING) {
             sendCommand("CUSTOM Q1");
             mCommandHandler.postDelayed(new Runnable() {
                 @Override
@@ -534,17 +531,18 @@ public class GolfBallDeliveryActivity extends ImageRecActivity {
 
     /**
      * Done
+     *
      * @param receivedCommand
      */
     @Override
-    protected void onCommandReceived(String receivedCommand) {   
+    protected void onCommandReceived(String receivedCommand) {
         super.onCommandReceived(receivedCommand);
         Toast.makeText(GolfBallDeliveryActivity.this, receivedCommand, Toast.LENGTH_SHORT).show();
         int startIndex = receivedCommand.indexOf('[');
         int endIndex = receivedCommand.indexOf(']');
-        if (startIndex == -1 || endIndex == -1){
+        if (startIndex == -1 || endIndex == -1) {
             Toast.makeText(GolfBallDeliveryActivity.this, "Error! Malformed data", Toast.LENGTH_SHORT).show();
-            Log.e(TAG, "Malformed Data "+receivedCommand);
+            Log.e(TAG, "Malformed Data " + receivedCommand);
             return;
         }
         String data = receivedCommand.substring(startIndex + 1, endIndex - 1);
@@ -561,12 +559,12 @@ public class GolfBallDeliveryActivity extends ImageRecActivity {
                     for (int j = 1; j < splitData.length - 1; j++) { // data[0] and data[6] are not important here.
                         score += Math.abs(calibrationData[color][j][i] - Integer.parseInt(splitData[j]));
                     }
-                    if (bestScore > score){
+                    if (bestScore > score) {
                         bestScore = score;
                         scoredColor = color;
                     }
                 }
-                setBallPos(scoredColor, i+1); // The GUI is 1-based index for reasons.
+                setBallPos(scoredColor, i + 1); // The GUI is 1-based index for reasons.
                 break;
             case NOT_CALIBRATED:
                 Toast.makeText(GolfBallDeliveryActivity.this, "Discarding data: not calibrated", Toast.LENGTH_SHORT).show();
@@ -581,7 +579,7 @@ public class GolfBallDeliveryActivity extends ImageRecActivity {
         }
 
     }
-    
+
 
     /**
      * Clicks to the red arrow image button that should show a dialog window.
@@ -743,7 +741,7 @@ public class GolfBallDeliveryActivity extends ImageRecActivity {
         }
         mState = newState;
     }
-    
+
     /*
     Calibration Functions
      */
@@ -758,7 +756,7 @@ public class GolfBallDeliveryActivity extends ImageRecActivity {
     6   blue
      */
     private BallColor indexToColor(int colorIndex) {
-        switch(colorIndex){
+        switch (colorIndex) {
             case 0:
                 return BallColor.NONE;
             case 1:
@@ -778,7 +776,7 @@ public class GolfBallDeliveryActivity extends ImageRecActivity {
         }
     }
 
-    public void handleLoad(View view){
+    public void handleLoad(View view) {
         loadCalibrationData();
     }
 
@@ -801,6 +799,7 @@ public class GolfBallDeliveryActivity extends ImageRecActivity {
 
 
     }
+
     // Calibration pattern:
     /*
     1        None    None    None
@@ -825,37 +824,37 @@ public class GolfBallDeliveryActivity extends ImageRecActivity {
         switch (cal_stage) {
             case 1:
                 //You should never be here, but this is here just for show
-                Toast.makeText(GolfBallDeliveryActivity.this,"Set: None, None, None", Toast.LENGTH_SHORT).show();
+                Toast.makeText(GolfBallDeliveryActivity.this, "Set: None, None, None", Toast.LENGTH_SHORT).show();
                 idMatrix = new int[]{0, 0, 0};
                 calibrateButton.setText("Next 6");
                 break;
             case 2:
-                Toast.makeText(GolfBallDeliveryActivity.this,"Set: Black, White, Red", Toast.LENGTH_SHORT).show();
+                Toast.makeText(GolfBallDeliveryActivity.this, "Set: Black, White, Red", Toast.LENGTH_SHORT).show();
                 idMatrix = new int[]{1, 2, 3};
                 calibrateButton.setText("Next 5");
                 break;
             case 3:
-                Toast.makeText(GolfBallDeliveryActivity.this,"Set: White, Red, Black", Toast.LENGTH_SHORT).show();
+                Toast.makeText(GolfBallDeliveryActivity.this, "Set: White, Red, Black", Toast.LENGTH_SHORT).show();
                 idMatrix = new int[]{2, 3, 1};
                 calibrateButton.setText("Next 4");
                 break;
             case 4:
-                Toast.makeText(GolfBallDeliveryActivity.this,"Set: Red, Black, White", Toast.LENGTH_SHORT).show();
+                Toast.makeText(GolfBallDeliveryActivity.this, "Set: Red, Black, White", Toast.LENGTH_SHORT).show();
                 idMatrix = new int[]{3, 1, 2};
                 calibrateButton.setText("Next 3");
                 break;
             case 5:
-                Toast.makeText(GolfBallDeliveryActivity.this,"Set: Green, Yellow, Blue", Toast.LENGTH_SHORT).show();
+                Toast.makeText(GolfBallDeliveryActivity.this, "Set: Green, Yellow, Blue", Toast.LENGTH_SHORT).show();
                 idMatrix = new int[]{4, 5, 6};
                 calibrateButton.setText("Next 2");
                 break;
             case 6:
-                Toast.makeText(GolfBallDeliveryActivity.this,"Set: Yellow, Blue, Green", Toast.LENGTH_SHORT).show();
+                Toast.makeText(GolfBallDeliveryActivity.this, "Set: Yellow, Blue, Green", Toast.LENGTH_SHORT).show();
                 idMatrix = new int[]{5, 6, 4};
                 calibrateButton.setText("Next 1");
                 break;
             case 7:
-                Toast.makeText(GolfBallDeliveryActivity.this,"Set: Blue, Green, Yellow", Toast.LENGTH_SHORT).show();
+                Toast.makeText(GolfBallDeliveryActivity.this, "Set: Blue, Green, Yellow", Toast.LENGTH_SHORT).show();
                 idMatrix = new int[]{6, 4, 5};
                 calibrateButton.setText("Confirm");
                 break;
@@ -880,11 +879,12 @@ public class GolfBallDeliveryActivity extends ImageRecActivity {
             e.printStackTrace();
         }
     }
-    private void loadCalibrationData(){
+
+    private void loadCalibrationData() {
         try {
             loadCalibration.setEnabled(false);
             inputStream = new ObjectInputStream(openFileInput(filename));
-            calibrationData = (int[][][])inputStream.readObject();
+            calibrationData = (int[][][]) inputStream.readObject();
             inputStream.close();
             cal_state = CalibrationStatus.CALIBRATED;
             loadCalibration.setText("Reload");
@@ -896,11 +896,11 @@ public class GolfBallDeliveryActivity extends ImageRecActivity {
             cal_state = CalibrationStatus.NOT_CALIBRATED;
         }
     }
-    
+
     /*
     Our own "Setting ball positions"
      */
-    private void setBallPos(int colorIndex, int index){
+    private void setBallPos(int colorIndex, int index) {
         BallColor ballColor = indexToColor(colorIndex);
         setBallPos(ballColor, index);
     }
@@ -909,13 +909,19 @@ public class GolfBallDeliveryActivity extends ImageRecActivity {
         // Updates the positions on screen
         setLocationToColor(index, ballColor);
 
-        if (ballColor == BallColor.RED || ballColor == BallColor.GREEN)
-            RGLoc = index;
-        else if (ballColor == BallColor.WHITE)
-            WLoc = index;
-        else if (ballColor == BallColor.BLUE || ballColor == BallColor.YELLOW)
-            BYLoc = index;
-        else {
+        if (ballColor == BallColor.RED || ballColor == BallColor.GREEN) {
+            if (mOnRedTeam)
+                mNearBallLocation = index;
+            else
+                mFarBallLocation = index;
+        } else if (ballColor == BallColor.WHITE)
+            mWhiteBallLocation = index;
+        else if (ballColor == BallColor.BLUE || ballColor == BallColor.YELLOW) {
+            if (!mOnRedTeam)
+                mNearBallLocation = index;
+            else
+                mFarBallLocation = index;
+        } else {
             // Debug toast. 
             //Toast.makeText(GolfBallDeliveryActivity.this, "Ball Dropped off", Toast.LENGTH_SHORT).show();
             switch (index) {
