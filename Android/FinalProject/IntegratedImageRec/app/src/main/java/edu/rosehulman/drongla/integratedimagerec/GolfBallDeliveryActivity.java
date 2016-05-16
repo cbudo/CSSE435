@@ -4,6 +4,7 @@ package edu.rosehulman.drongla.integratedimagerec;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.DialogFragment;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.location.Location;
 import android.os.Bundle;
@@ -21,6 +22,9 @@ import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ViewFlipper;
 
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+
 import edu.rosehulman.drongla.integratedimagerec.R;
 import edu.rosehulman.drongla.integratedimagerec.Scripts;
 import edu.rosehulman.me435.NavUtils;
@@ -28,11 +32,31 @@ import edu.rosehulman.me435.RobotActivity;
 
 public class GolfBallDeliveryActivity extends ImageRecActivity {
 
+    TextView ball1, ball2, ball3;
+    private boolean dropped1, dropped2, dropped3;
+    private int RGLoc, WLoc, BYLoc;
+    
     /**
      * Constant used with logging that you'll see later.
      */
     public static final String TAG = "GolfBallDelivery";
+    private ObjectInputStream inputStream;
+    private ObjectOutputStream outputStream;
+    /**
+     * An enum used for calibration
+     */
+    private enum CalibrationStatus {
+        CALIBRATED, NOT_CALIBRATED, NOW_CALIBRATING
+    }
 
+    private CalibrationStatus cal_state;
+    private int cal_stage = -1;
+    private Button calibrateButton, loadCalibration, debugTestBalls;
+
+    String filename = "cal.data";
+    private int calibrationData[][][] = new int[7][7][3]; //  7 colors, 7 readings, 3 sensors.
+    private int idMatrix[] = new int[3];
+    
     /**
      * An enum used for variables when a ball color needs to be referenced.
      */
@@ -218,6 +242,22 @@ public class GolfBallDeliveryActivity extends ImageRecActivity {
         setLocationToColor(1, BallColor.RED);
         setLocationToColor(2, BallColor.WHITE);
         setLocationToColor(3, BallColor.BLUE);
+
+        /*
+        Copy and pasted from GolfBallSorting
+         */
+//        ball1 = (TextView) findViewById(R.id.ball1_textView);
+//        ball2 = (TextView) findViewById(R.id.ball2_textView);
+//        ball3 = (TextView) findViewById(R.id.ball3_textView);
+        dropped1 = false;
+        dropped2 = false;
+        dropped3 = false;
+        cal_state = CalibrationStatus.NOT_CALIBRATED;
+        calibrateButton = (Button)findViewById(R.id.calibrateButton);
+        loadCalibration = (Button)findViewById(R.id.loadCalibration);
+        debugTestBalls= (Button) findViewById(R.id.buttonDebugBallTest);
+        
+        
         mScripts = new Scripts(this);
     }
 
@@ -445,43 +485,99 @@ public class GolfBallDeliveryActivity extends ImageRecActivity {
         // setTeamToRed(mOnRedTeam); // This call is optional. It will reset your GPS and sensor heading values.
     }
 
+
     /**
      * Sends a message to Arduino to perform a ball color test.
-     */
-    /**
-     * Sends a message to Arduino to perform a ball color test.
+     * DONE
      */
     public void handlePerformBallTest(View view) {
-        Toast.makeText(this, "Sent a command to Arduino to perform a ball test.  Waiting for a reply", Toast.LENGTH_SHORT).show();
-//        sendCommand("CUSTOM Do a ball test");
-
-        // Send a mock reply from the Arduino manually
-        onCommandReceived("1R");
-        mCommandHandler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                onCommandReceived("2W");
-            }
-        }, 1000);
-        mCommandHandler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                onCommandReceived("3B");
-            }
-        }, 2000);
-    }
-
-    @Override
-    protected void onCommandReceived(String receivedCommand) {
-        super.onCommandReceived(receivedCommand);
-        if (receivedCommand.equalsIgnoreCase("1R")) {
-            setLocationToColor(1, BallColor.RED);
-        } else if (receivedCommand.equalsIgnoreCase("2W")) {
-            setLocationToColor(2, BallColor.WHITE);
-        } else if (receivedCommand.equalsIgnoreCase("3B")) {
-            setLocationToColor(3, BallColor.BLUE);
+        // DONE: Send command to arduino to get ball colorz
+        if (cal_state == CalibrationStatus.CALIBRATED) {
+            sendCommand("ATTACH 111111");
+            sendCommand(getString(R.string.gripper_command, 50));
+            dropped1 = false;
+            dropped2 = false;
+            dropped3 = false;
+            sendCommand("CUSTOM Q1");
+            mCommandHandler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    sendCommand("CUSTOM Q2");
+                }
+            }, 500);
+            mCommandHandler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    sendCommand("CUSTOM Q3");
+                }
+            }, 1000);
+        } else if (cal_state == CalibrationStatus.NOW_CALIBRATING){
+            sendCommand("CUSTOM Q1");
+            mCommandHandler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    sendCommand("CUSTOM Q2");
+                }
+            }, 500);
+            mCommandHandler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    sendCommand("CUSTOM Q3");
+                }
+            }, 1000);
         }
     }
+
+    /**
+     * Done
+     * @param receivedCommand
+     */
+    @Override
+    protected void onCommandReceived(String receivedCommand) {   
+        super.onCommandReceived(receivedCommand);
+        Toast.makeText(GolfBallDeliveryActivity.this, receivedCommand, Toast.LENGTH_SHORT).show();
+        int startIndex = receivedCommand.indexOf('[');
+        int endIndex = receivedCommand.indexOf(']');
+        if (startIndex == -1 || endIndex == -1){
+            Toast.makeText(GolfBallDeliveryActivity.this, "Error! Malformed data", Toast.LENGTH_SHORT).show();
+            Log.e(TAG, "Malformed Data "+receivedCommand);
+            return;
+        }
+        String data = receivedCommand.substring(startIndex + 1, endIndex - 1);
+        String[] splitData = data.split(",");
+        int i = Integer.parseInt(splitData[0]); // Location 1 is 0 = :)
+
+        switch (cal_state) {
+            case CALIBRATED:
+                int bestScore = 999999;
+                int score;
+                int scoredColor = -1;
+                for (int color = 0; color < 7; color++) {
+                    score = 0;
+                    for (int j = 1; j < splitData.length - 1; j++) { // data[0] and data[6] are not important here.
+                        score += Math.abs(calibrationData[color][j][i] - Integer.parseInt(splitData[j]));
+                    }
+                    if (bestScore > score){
+                        bestScore = score;
+                        scoredColor = color;
+                    }
+                }
+                setBallPos(scoredColor, i+1); // The GUI is 1-based index for reasons.
+                break;
+            case NOT_CALIBRATED:
+                Toast.makeText(GolfBallDeliveryActivity.this, "Discarding data: not calibrated", Toast.LENGTH_SHORT).show();
+                break;
+            case NOW_CALIBRATING:
+                //RECALL:    calibrationData[][][] = new int[7][7][3]; //  7 colors, 7 data values, 3 sensors.
+                // idMatrix is a vector of [ loc1color, loc2color, loc3color ] for this calibration stage.
+                for (int j = 0; j < splitData.length; j++) {
+                    calibrationData[idMatrix[i]][j][i] = Integer.parseInt(splitData[j]);
+                }
+                break;
+        }
+
+    }
+    
 
     /**
      * Clicks to the red arrow image button that should show a dialog window.
@@ -634,5 +730,193 @@ public class GolfBallDeliveryActivity extends ImageRecActivity {
                 break;
         }
         mState = newState;
+    }
+    
+    /*
+    Calibration Functions
+     */
+        /*
+        Color Ids:
+    0   none
+    1   black
+    2   white
+    3   red
+    4   green
+    5   yellow
+    6   blue
+     */
+    private BallColor indexToColor(int colorIndex) {
+        switch(colorIndex){
+            case 0:
+                return BallColor.NONE;
+            case 1:
+                return BallColor.BLACK;
+            case 2:
+                return BallColor.WHITE;
+            case 3:
+                return BallColor.RED;
+            case 4:
+                return BallColor.GREEN;
+            case 5:
+                return BallColor.YELLOW;
+            case 6:
+                return BallColor.BLUE;
+            default:
+                return BallColor.NONE; //Should be Error, but whatever.
+        }
+    }
+
+    public void handleLoad(View view){
+        loadCalibrationData();
+    }
+
+    public void handleCalibration(View view) {
+        if (cal_state != CalibrationStatus.NOW_CALIBRATING) {
+
+            loadCalibration.setEnabled(false);
+            cal_state = CalibrationStatus.NOW_CALIBRATING;
+            Toast.makeText(GolfBallDeliveryActivity.this, "Now Calibrating!", Toast.LENGTH_SHORT).show();
+            Toast.makeText(GolfBallDeliveryActivity.this, "Set: None, None, None", Toast.LENGTH_SHORT).show();
+            Toast.makeText(GolfBallDeliveryActivity.this, "Then, click Test Colors", Toast.LENGTH_SHORT).show();
+            calibrateButton.setText("Next 6");
+            debugTestBalls.setBackgroundResource(R.drawable.green_button);
+            idMatrix = new int[]{0, 0, 0};
+            cal_stage = 1;
+            //onCommandReceived("[0,0,0,0,0,0,0]"); //DEBUG
+        } else {
+            nextCalibrationStage();
+        }
+
+
+    }
+    // Calibration pattern:
+    /*
+    1        None    None    None
+    2        Black   White   Red
+    3        White   Red     Black
+    4        Red     Black   White
+    5        Green   Yellow  Blue
+    6        Yellow  Blue    Green
+    7        Blue    Green   Yellow
+
+    Color Ids:
+    0   none
+    1   black
+    2   white
+    3   red
+    4   green
+    5   yellow
+    6   blue
+     */
+    private void nextCalibrationStage() {
+        cal_stage++;
+        switch (cal_stage) {
+            case 1:
+                //You should never be here, but this is here just for show
+                Toast.makeText(GolfBallDeliveryActivity.this,"Set: None, None, None", Toast.LENGTH_SHORT).show();
+                idMatrix = new int[]{0, 0, 0};
+                calibrateButton.setText("Next 6");
+                break;
+            case 2:
+                Toast.makeText(GolfBallDeliveryActivity.this,"Set: Black, White, Red", Toast.LENGTH_SHORT).show();
+                idMatrix = new int[]{1, 2, 3};
+                calibrateButton.setText("Next 5");
+                break;
+            case 3:
+                Toast.makeText(GolfBallDeliveryActivity.this,"Set: White, Red, Black", Toast.LENGTH_SHORT).show();
+                idMatrix = new int[]{2, 3, 1};
+                calibrateButton.setText("Next 4");
+                break;
+            case 4:
+                Toast.makeText(GolfBallDeliveryActivity.this,"Set: Red, Black, White", Toast.LENGTH_SHORT).show();
+                idMatrix = new int[]{3, 1, 2};
+                calibrateButton.setText("Next 3");
+                break;
+            case 5:
+                Toast.makeText(GolfBallDeliveryActivity.this,"Set: Green, Yellow, Blue", Toast.LENGTH_SHORT).show();
+                idMatrix = new int[]{4, 5, 6};
+                calibrateButton.setText("Next 2");
+                break;
+            case 6:
+                Toast.makeText(GolfBallDeliveryActivity.this,"Set: Yellow, Blue, Green", Toast.LENGTH_SHORT).show();
+                idMatrix = new int[]{5, 6, 4};
+                calibrateButton.setText("Next 1");
+                break;
+            case 7:
+                Toast.makeText(GolfBallDeliveryActivity.this,"Set: Blue, Green, Yellow", Toast.LENGTH_SHORT).show();
+                idMatrix = new int[]{6, 4, 5};
+                calibrateButton.setText("Confirm");
+                break;
+            default:
+                Toast.makeText(GolfBallDeliveryActivity.this, "Done Calibrating!", Toast.LENGTH_SHORT).show();
+                cal_stage = -1;
+                cal_state = CalibrationStatus.CALIBRATED;
+                saveCalibrationData();
+                loadCalibration.setEnabled(true);
+                debugTestBalls.setBackgroundResource(R.drawable.black_button);
+                break;
+        }
+    }
+
+    private void saveCalibrationData() {
+        try {
+            outputStream = new ObjectOutputStream(openFileOutput(filename, Context.MODE_PRIVATE));
+            outputStream.writeObject(calibrationData);
+            outputStream.close();
+        } catch (Exception e) {
+            Toast.makeText(GolfBallDeliveryActivity.this, "Could not save data", Toast.LENGTH_SHORT).show();
+            e.printStackTrace();
+        }
+    }
+    private void loadCalibrationData(){
+        try {
+            loadCalibration.setEnabled(false);
+            inputStream = new ObjectInputStream(openFileInput(filename));
+            calibrationData = (int[][][])inputStream.readObject();
+            inputStream.close();
+            cal_state = CalibrationStatus.CALIBRATED;
+            loadCalibration.setText("Reload");
+            Toast.makeText(GolfBallDeliveryActivity.this, "Calibration Loaded", Toast.LENGTH_SHORT).show();
+            loadCalibration.setEnabled(true);
+        } catch (Exception e) {
+            Toast.makeText(GolfBallDeliveryActivity.this, "Could not load data", Toast.LENGTH_SHORT).show();
+            e.printStackTrace();
+            cal_state = CalibrationStatus.NOT_CALIBRATED;
+        }
+    }
+    
+    /*
+    Our own "Setting ball positions"
+     */
+    private void setBallPos(int colorIndex, int index){
+        BallColor ballColor = indexToColor(colorIndex);
+        setBallPos(ballColor, index);
+    }
+
+    private void setBallPos(BallColor ballColor, int index) {
+        // Updates the positions on screen
+        setLocationToColor(index, ballColor);
+
+        if (ballColor == BallColor.RED || ballColor == BallColor.GREEN)
+            RGLoc = index;
+        else if (ballColor == BallColor.WHITE)
+            WLoc = index;
+        else if (ballColor == BallColor.BLUE || ballColor == BallColor.YELLOW)
+            BYLoc = index;
+        else {
+            // Debug toast. 
+            //Toast.makeText(GolfBallDeliveryActivity.this, "Ball Dropped off", Toast.LENGTH_SHORT).show();
+            switch (index) {
+                case 1:
+                    dropped1 = true;
+                    break;
+                case 2:
+                    dropped2 = true;
+                    break;
+                case 3:
+                    dropped3 = true;
+                    break;
+            }
+        }
     }
 }

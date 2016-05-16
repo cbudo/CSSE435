@@ -14,13 +14,14 @@
         android:paddingStart="@dimen/activity_vertical_margin"
         android:paddingLeft="@dimen/activity_horizontal_margin"
         android:paddingRight="@dimen/activity_horizontal_margin"
-        />
+        android:layout_margin="15sp"
+        android:id="@+id/textViewA" />
     <TableLayout
         android:id="@+id/fake_gps_button_table"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
-        >
+        android:layout_below="@+id/textViewA"
+        android:layout_alignParentStart="true">
 
         <TableRow
             android:layout_width="match_parent"
@@ -80,4 +81,60 @@
                 android:text="GPS H3" />
         </TableRow>
     </TableLayout>
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/fake_gps_button_table"
+        android:layout_alignParentStart="true">
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Stand Calibration"
+            android:textColor="#fff"
+            android:paddingEnd="@dimen/activity_vertical_margin"
+            android:paddingStart="@dimen/activity_vertical_margin"
+            android:paddingLeft="@dimen/activity_horizontal_margin"
+            android:paddingRight="@dimen/activity_horizontal_margin"
+            android:layout_margin="15sp"/>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal"
+            >
+            <Button
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:text="Ball Test"
+                android:background="@drawable/black_button"
+                android:textColor="#fff"
+                android:layout_weight="1"
+                android:layout_margin="5sp"
+                android:onClick="handlePerformBallTest"
+                android:id="@+id/buttonDebugBallTest" />
+            <Button
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:text="Calibrate"
+                android:background="@drawable/black_button"
+                android:textColor="#fff"
+                android:layout_weight="1"
+                android:layout_margin="5sp"
+                android:id="@+id/calibrateButton"
+                android:onClick="handleCalibration"/>
+            <Button
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:background="@drawable/red_button"
+                android:textColor="#fff"
+                android:text="Load"
+                android:layout_weight="1"
+                android:layout_margin="5sp"
+                android:id="@+id/loadCalibration"
+                android:onClick="handleLoad"
+                />
+        </LinearLayout>
+    </LinearLayout>
+
 </RelativeLayout>
