@@ -16,7 +16,7 @@ AndroidAccessory acc(manufacturer, model, "Final Projekt FTW", versionStr, "http
 
 String ballData_1, ballData_2, ballData_3;
 int ballData_ext;
-int debug = 0;
+int debug = 1;
 
 EasyGolfBallStand stand;
 byte rxBuf[255];
@@ -160,7 +160,7 @@ void customStringCallbackFromAndroid(String customString) {
     ballData_1 = stand.determineBallColor(LOCATION_1);
     if (debug){    Serial.println(ballData_1); }
     
-    ballData_1.toCharArray(txBuf, ballData_1.length());
+    ballData_1.toCharArray(txBuf, ballData_1.length()+1);
     standReplyLength = ballData_1.length();    
     mainEventFlags |= FLAG_NEED_TO_SEND_STAND_INFO;
   }
@@ -169,7 +169,7 @@ void customStringCallbackFromAndroid(String customString) {
     lcd.print("Q2");
     ballData_2 = stand.determineBallColor(LOCATION_2);
     if (debug){    Serial.println(ballData_2); }
-    ballData_2.toCharArray(txBuf, ballData_2.length());
+    ballData_2.toCharArray(txBuf, ballData_2.length()+1);
     standReplyLength = ballData_2.length();
     mainEventFlags |= FLAG_NEED_TO_SEND_STAND_INFO;
   }
@@ -178,7 +178,7 @@ void customStringCallbackFromAndroid(String customString) {
     lcd.print("Q3");
     ballData_3 = stand.determineBallColor(LOCATION_3);
     if (debug){    Serial.println(ballData_3); }
-    ballData_3.toCharArray(txBuf, ballData_3.length());
+    ballData_3.toCharArray(txBuf, ballData_3.length()+1);
     standReplyLength = ballData_3.length();
     mainEventFlags |= FLAG_NEED_TO_SEND_STAND_INFO;
   }
