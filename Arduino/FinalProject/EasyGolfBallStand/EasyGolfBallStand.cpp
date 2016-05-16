@@ -121,13 +121,13 @@ String EasyGolfBallStand::determineBallColor(int location) {
   int locN = -1;
   switch (location) {
     case LOCATION_1:
-        locN = 1;
+        locN = 0;
         break;
     case LOCATION_2:
-        locN = 2;
+        locN = 1;
         break;
     case LOCATION_3:
-        locN = 3;
+        locN = 2;
         break;
   }
 
