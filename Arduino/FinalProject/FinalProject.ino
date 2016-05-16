@@ -9,7 +9,7 @@
 
 
 char manufacturer[] = "Rose-Hulman";
-char model[] = "GolfBallStand";
+char model[] = "Golf Ball Delivery";
 char versionStr[] = "1.0";
 
 AndroidAccessory acc(manufacturer, model, "Final Projekt FTW", versionStr, "https://sites.google.com/site/me435spring2016", "00001");
