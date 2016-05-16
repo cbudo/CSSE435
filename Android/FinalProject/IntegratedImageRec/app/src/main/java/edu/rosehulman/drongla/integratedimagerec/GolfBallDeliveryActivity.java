@@ -56,6 +56,8 @@ public class GolfBallDeliveryActivity extends ImageRecActivity {
     String filename = "cal.data";
     private int calibrationData[][][] = new int[7][7][3]; //  7 colors, 7 readings, 3 sensors.
     private int idMatrix[] = new int[3];
+
+    private TextView m_text_debug_1, m_text_debug_2, m_text_debug_3;
     
     /**
      * An enum used for variables when a ball color needs to be referenced.
@@ -249,6 +251,11 @@ public class GolfBallDeliveryActivity extends ImageRecActivity {
 //        ball1 = (TextView) findViewById(R.id.ball1_textView);
 //        ball2 = (TextView) findViewById(R.id.ball2_textView);
 //        ball3 = (TextView) findViewById(R.id.ball3_textView);
+
+        m_text_debug_1 = (TextView) findViewById(R.id.textview_ball1);
+        m_text_debug_2 = (TextView) findViewById(R.id.textview_ball2);
+        m_text_debug_3 = (TextView) findViewById(R.id.textview_ball3);
+
         dropped1 = false;
         dropped2 = false;
         dropped3 = false;
@@ -535,7 +542,7 @@ public class GolfBallDeliveryActivity extends ImageRecActivity {
     @Override
     protected void onCommandReceived(String receivedCommand) {   
         super.onCommandReceived(receivedCommand);
-        Toast.makeText(GolfBallDeliveryActivity.this, receivedCommand, Toast.LENGTH_SHORT).show();
+        //Toast.makeText(GolfBallDeliveryActivity.this, receivedCommand, Toast.LENGTH_SHORT).show();
         int startIndex = receivedCommand.indexOf('[');
         int endIndex = receivedCommand.indexOf(']');
         if (startIndex == -1 || endIndex == -1){
@@ -572,6 +579,10 @@ public class GolfBallDeliveryActivity extends ImageRecActivity {
                 // idMatrix is a vector of [ loc1color, loc2color, loc3color ] for this calibration stage.
                 for (int j = 0; j < splitData.length; j++) {
                     calibrationData[idMatrix[i]][j][i] = Integer.parseInt(splitData[j]);
+                }
+                // Auto-next stage
+                if(( i == 2)){
+                    handleCalibration(null);
                 }
                 break;
         }
@@ -770,18 +781,17 @@ public class GolfBallDeliveryActivity extends ImageRecActivity {
         loadCalibrationData();
     }
 
+
     public void handleCalibration(View view) {
         if (cal_state != CalibrationStatus.NOW_CALIBRATING) {
-
             loadCalibration.setEnabled(false);
+            calibrateButton.setVisibility(View.GONE);
             cal_state = CalibrationStatus.NOW_CALIBRATING;
             Toast.makeText(GolfBallDeliveryActivity.this, "Now Calibrating!", Toast.LENGTH_SHORT).show();
-            Toast.makeText(GolfBallDeliveryActivity.this, "Set: None, None, None", Toast.LENGTH_SHORT).show();
-            Toast.makeText(GolfBallDeliveryActivity.this, "Then, click Test Colors", Toast.LENGTH_SHORT).show();
-            calibrateButton.setText("Next 6");
             debugTestBalls.setBackgroundResource(R.drawable.green_button);
             idMatrix = new int[]{0, 0, 0};
-            cal_stage = 1;
+            cal_stage = 0; // Ready to start now.
+            nextCalibrationStage();
             //onCommandReceived("[0,0,0,0,0,0,0]"); //DEBUG
         } else {
             nextCalibrationStage();
@@ -813,39 +823,62 @@ public class GolfBallDeliveryActivity extends ImageRecActivity {
         switch (cal_stage) {
             case 1:
                 //You should never be here, but this is here just for show
-                Toast.makeText(GolfBallDeliveryActivity.this,"Set: None, None, None", Toast.LENGTH_SHORT).show();
+                //Toast.makeText(GolfBallDeliveryActivity.this,"Set: None, None, None", Toast.LENGTH_SHORT).show();
                 idMatrix = new int[]{0, 0, 0};
                 calibrateButton.setText("Next 6");
+                m_text_debug_1.setText("None");
+                m_text_debug_2.setText("None");
+                m_text_debug_3.setText("None");
                 break;
             case 2:
-                Toast.makeText(GolfBallDeliveryActivity.this,"Set: Black, White, Red", Toast.LENGTH_SHORT).show();
+                //Toast.makeText(GolfBallDeliveryActivity.this,"Set: Black, White, Red", Toast.LENGTH_SHORT).show();
                 idMatrix = new int[]{1, 2, 3};
                 calibrateButton.setText("Next 5");
+                m_text_debug_1.setText("Black");
+                m_text_debug_2.setText("White");
+                m_text_debug_3.setText("Red");
                 break;
             case 3:
-                Toast.makeText(GolfBallDeliveryActivity.this,"Set: White, Red, Black", Toast.LENGTH_SHORT).show();
+                //Toast.makeText(GolfBallDeliveryActivity.this,"Set: White, Red, Black", Toast.LENGTH_SHORT).show();
                 idMatrix = new int[]{2, 3, 1};
                 calibrateButton.setText("Next 4");
+                m_text_debug_1.setText("White");
+                m_text_debug_2.setText("Red");
+                m_text_debug_3.setText("Black");
+
                 break;
             case 4:
-                Toast.makeText(GolfBallDeliveryActivity.this,"Set: Red, Black, White", Toast.LENGTH_SHORT).show();
+                //Toast.makeText(GolfBallDeliveryActivity.this,"Set: Red, Black, White", Toast.LENGTH_SHORT).show();
                 idMatrix = new int[]{3, 1, 2};
                 calibrateButton.setText("Next 3");
+                m_text_debug_1.setText("Red");
+                m_text_debug_2.setText("Black");
+                m_text_debug_3.setText("White");
                 break;
             case 5:
-                Toast.makeText(GolfBallDeliveryActivity.this,"Set: Green, Yellow, Blue", Toast.LENGTH_SHORT).show();
+                //Toast.makeText(GolfBallDeliveryActivity.this,"Set: Green, Yellow, Blue", Toast.LENGTH_SHORT).show();
                 idMatrix = new int[]{4, 5, 6};
                 calibrateButton.setText("Next 2");
+                m_text_debug_1.setText("Green");
+                m_text_debug_2.setText("Yellow");
+                m_text_debug_3.setText("Blue");
                 break;
             case 6:
-                Toast.makeText(GolfBallDeliveryActivity.this,"Set: Yellow, Blue, Green", Toast.LENGTH_SHORT).show();
+                //Toast.makeText(GolfBallDeliveryActivity.this,"Set: Yellow, Blue, Green", Toast.LENGTH_SHORT).show();
                 idMatrix = new int[]{5, 6, 4};
                 calibrateButton.setText("Next 1");
+                m_text_debug_1.setText("Yellow");
+                m_text_debug_2.setText("Blue");
+                m_text_debug_3.setText("Green");
                 break;
             case 7:
-                Toast.makeText(GolfBallDeliveryActivity.this,"Set: Blue, Green, Yellow", Toast.LENGTH_SHORT).show();
+                //Toast.makeText(GolfBallDeliveryActivity.this,"Set: Blue, Green, Yellow", Toast.LENGTH_SHORT).show();
                 idMatrix = new int[]{6, 4, 5};
+
                 calibrateButton.setText("Confirm");
+                m_text_debug_1.setText("Blue");
+                m_text_debug_2.setText("Green");
+                m_text_debug_3.setText("Yellow");
                 break;
             default:
                 Toast.makeText(GolfBallDeliveryActivity.this, "Done Calibrating!", Toast.LENGTH_SHORT).show();
@@ -853,7 +886,12 @@ public class GolfBallDeliveryActivity extends ImageRecActivity {
                 cal_state = CalibrationStatus.CALIBRATED;
                 saveCalibrationData();
                 loadCalibration.setEnabled(true);
+                calibrateButton.setVisibility(View.VISIBLE);
+                calibrateButton.setText("Recalibrate");
                 debugTestBalls.setBackgroundResource(R.drawable.black_button);
+                m_text_debug_1.setText("-");
+                m_text_debug_2.setText("-");
+                m_text_debug_3.setText("-");
                 break;
         }
     }
