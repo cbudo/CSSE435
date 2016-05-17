@@ -214,6 +214,43 @@
                 android:id="@+id/textview_ball3"/>
 
         </LinearLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal"
+            >
+            <Button
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:text="Drop Near"
+                android:background="@drawable/black_button"
+                android:textColor="#fff"
+                android:layout_weight="1"
+                android:layout_margin="5sp"
+                android:onClick="handleDropNearButton"
+                android:id="@+id/dropNearButton" />
+            <Button
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:text="Drop White"
+                android:background="@drawable/black_button"
+                android:textColor="#fff"
+                android:layout_weight="1"
+                android:layout_margin="5sp"
+                android:id="@+id/dropWhiteButton"
+                android:onClick="handleDropWhiteButton"/>
+            <Button
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:background="@drawable/red_button"
+                android:textColor="#fff"
+                android:text="Drop Far"
+                android:layout_weight="1"
+                android:layout_margin="5sp"
+                android:id="@+id/dropFarButton"
+                android:onClick="handleDropFarButton"
+                />
+        </LinearLayout>
     </LinearLayout>
 
 </RelativeLayout>

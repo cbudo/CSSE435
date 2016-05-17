@@ -80,7 +80,7 @@ public class Scripts {
      */
     public void farBallScript() {
         mGolfBallDeliveryActivity.sendWheelSpeed(0, 0);
-        Toast.makeText(mGolfBallDeliveryActivity, "Figure out which ball(s) to remove and do it.", Toast.LENGTH_SHORT).show();
+//        Toast.makeText(mGolfBallDeliveryActivity, "Figure out which ball(s) to remove and do it.", Toast.LENGTH_SHORT).show();
         removeBallAtLocation(mGolfBallDeliveryActivity.mFarBallLocation);
         mCommandHandler.postDelayed(new Runnable() {
             @Override
@@ -103,6 +103,7 @@ public class Scripts {
      */
     public void removeBallAtLocation(final int location) {
         // DONE: Replace with a script that might actually remove a ball. :)
+        Toast.makeText(mGolfBallDeliveryActivity, "drop off " + location, Toast.LENGTH_SHORT).show();
         switch (location) {
             case 1:
                 drop1Script();
@@ -114,7 +115,6 @@ public class Scripts {
                 drop3Script();
                 break;
             default:
-                Toast.makeText(mGolfBallDeliveryActivity, "Not a location", Toast.LENGTH_SHORT).show();
                 break;
         }
     }
