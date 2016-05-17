@@ -1,3 +1,6 @@
+/*
+ * LCD Has been commented out as it is not used in the final contest
+ */
 #include <Max3421e.h>
 #include <Usb.h>
 #include <AndroidAccessory.h>
@@ -46,7 +49,7 @@ volatile int mainEventFlags = 0;
 #define FLAG_NEED_TO_SEND_WHEEL_CURRENT    0x0010
 #define FLAG_NEED_TO_SEND_STAND_INFO       0x0100
 
-LiquidCrystal lcd(14, 15, 16, 17, 18, 19, 20);
+//LiquidCrystal lcd(14, 15, 16, 17, 18, 19, 20);
 #define LINE_1 0
 #define LINE_2 1
 
@@ -75,72 +78,72 @@ void setup(){
   wildThumperCom.registerBatteryVoltageReplyCallback(batteryVoltageReplyFromThumper);
   wildThumperCom.registerWheelCurrentReplyCallback(wheelCurrentReplyFromThumper);
 
-  lcd.begin(16, 2);
-  lcd.clear();
-  lcd.print("Final Project!");
+//  lcd.begin(16, 2);
+//  lcd.clear();
+//  lcd.print("Final Project!");
   delay(1450);
   acc.powerOn();
 }
 
 void wheelSpeedMessageFromAndroid(byte leftMode, byte rightMode, byte leftDutyCycle, byte rightDutyCycle) {
   wildThumperCom.sendWheelSpeed(leftMode, rightMode, leftDutyCycle, rightDutyCycle);
-  lcd.clear();
-  lcd.print("Wheel speed:");
-  lcd.setCursor(0, LINE_2);
-  lcd.print("L");
-  lcd.print(leftMode);
-  lcd.print(" R");
-  lcd.print(rightMode);
-  lcd.print(" L");
-  lcd.print(leftDutyCycle);
-  lcd.print(" R");
-  lcd.print(rightDutyCycle);
+//  lcd.clear();
+//  lcd.print("Wheel speed:");
+//  lcd.setCursor(0, LINE_2);
+//  lcd.print("L");
+//  lcd.print(leftMode);
+//  lcd.print(" R");
+//  lcd.print(rightMode);
+//  lcd.print(" L");
+//  lcd.print(leftDutyCycle);
+//  lcd.print(" R");
+//  lcd.print(rightDutyCycle);
 }
 
 void positionMessageFromAndroid(int joint1Angle, int joint2Angle, int joint3Angle, int joint4Angle, int joint5Angle) {
   wildThumperCom.sendPosition(joint1Angle, joint2Angle, joint3Angle, joint4Angle, joint5Angle);
-  lcd.clear();
-  lcd.print("Position:");
-  lcd.setCursor(0, LINE_2);
-  lcd.print(joint1Angle);
-  lcd.print(" ");
-  lcd.print(joint2Angle);
-  lcd.print(" ");
-  lcd.print(joint3Angle);
-  lcd.print(" ");
-  lcd.print(joint4Angle);
-  lcd.print(" ");
-  lcd.print(joint5Angle);
+//  lcd.clear();
+//  lcd.print("Position:");
+//  lcd.setCursor(0, LINE_2);
+//  lcd.print(joint1Angle);
+//  lcd.print(" ");
+//  lcd.print(joint2Angle);
+//  lcd.print(" ");
+//  lcd.print(joint3Angle);
+//  lcd.print(" ");
+//  lcd.print(joint4Angle);
+//  lcd.print(" ");
+//  lcd.print(joint5Angle);
 }
 
 void jointAngleMessageFromAndroid(byte jointNumber, int jointAngle) {
   wildThumperCom.sendJointAngle(jointNumber, jointAngle);
-  lcd.clear();
-  lcd.print("Joint angle:");
-  lcd.setCursor(0, LINE_2);
-  lcd.print("J");
-  lcd.print(jointNumber);
-  lcd.print(" move to ");
-  lcd.print(jointAngle);
+//  lcd.clear();
+//  lcd.print("Joint angle:");
+//  lcd.setCursor(0, LINE_2);
+//  lcd.print("J");
+//  lcd.print(jointNumber);
+//  lcd.print(" move to ");
+//  lcd.print(jointAngle);
 }
 
 void gripperMessageFromAndroid(int gripperDistance) {
   gripperDistance = constrain(gripperDistance, 10, 65);
   wildThumperCom.sendGripperDistance(gripperDistance);
-  lcd.clear();
-  lcd.print("Gripper:");
-  lcd.setCursor(0, LINE_2);
-  lcd.print("Gripper to ");
-  lcd.print(gripperDistance);
+//  lcd.clear();
+//  lcd.print("Gripper:");
+//  lcd.setCursor(0, LINE_2);
+//  lcd.print("Gripper to ");
+//  lcd.print(gripperDistance);
 }
 
 void attachSelectedServosCallback(byte servosToEnable) {
   wildThumperCom.sendAttachSelectedServos(servosToEnable);
-  lcd.clear();
-  lcd.print("Attach:");
-  lcd.setCursor(0, LINE_2);
-  lcd.print("54321G = ");
-  lcd.print(servosToEnable, BIN);
+//  lcd.clear();
+//  lcd.print("Attach:");
+//  lcd.setCursor(0, LINE_2);
+//  lcd.print("54321G = ");
+//  lcd.print(servosToEnable, BIN);
 }
 
 void batteryVoltageRequestFromAndroid(void) {
@@ -153,10 +156,10 @@ void wheelCurrentRequestFromAndroid(void) {
 
 
 void customStringCallbackFromAndroid(String customString) {
-  lcd.clear();
+//  lcd.clear();
   if (customString.equalsIgnoreCase("Q1")) {
-    lcd.setCursor(0, LINE_1);
-    lcd.print("Q1");
+//    lcd.setCursor(0, LINE_1);
+//    lcd.print("Q1");
     ballData_1 = stand.determineBallColor(LOCATION_1);
     if (debug){    Serial.println(ballData_1); }
     
@@ -165,8 +168,8 @@ void customStringCallbackFromAndroid(String customString) {
     mainEventFlags |= FLAG_NEED_TO_SEND_STAND_INFO;
   }
   else if (customString.equalsIgnoreCase("Q2")) {
-        lcd.setCursor(0, LINE_1);
-    lcd.print("Q2");
+//        lcd.setCursor(0, LINE_1);
+//    lcd.print("Q2");
     ballData_2 = stand.determineBallColor(LOCATION_2);
     if (debug){    Serial.println(ballData_2); }
     ballData_2.toCharArray(txBuf, ballData_2.length()+1);
@@ -174,8 +177,8 @@ void customStringCallbackFromAndroid(String customString) {
     mainEventFlags |= FLAG_NEED_TO_SEND_STAND_INFO;
   }
   else if (customString.equalsIgnoreCase("Q3")) {
-        lcd.setCursor(0, LINE_1);
-    lcd.print("Q3");
+//        lcd.setCursor(0, LINE_1);
+//    lcd.print("Q3");
     ballData_3 = stand.determineBallColor(LOCATION_3);
     if (debug){    Serial.println(ballData_3); }
     ballData_3.toCharArray(txBuf, ballData_3.length()+1);
@@ -183,8 +186,8 @@ void customStringCallbackFromAndroid(String customString) {
     mainEventFlags |= FLAG_NEED_TO_SEND_STAND_INFO;
   }
   else if (customString.equalsIgnoreCase("QX")) {
-        lcd.setCursor(0, LINE_1);
-    lcd.print("QX");
+//        lcd.setCursor(0, LINE_1);
+//    lcd.print("QX");
     ballData_ext = stand.getAnalogReading(LOCATION_EXTERNAL);
     if (debug){    Serial.println(ballData_ext); }
     sprintf(txBuf, "%d", ballData_ext);
@@ -192,10 +195,10 @@ void customStringCallbackFromAndroid(String customString) {
     mainEventFlags |= FLAG_NEED_TO_SEND_STAND_INFO;
   }
   else {
-    lcd.print("Unknown CUSTOM");
+//    lcd.print("Unknown CUSTOM");
   }
-  lcd.setCursor(0, LINE_2);
-  lcd.print(customString);
+//  lcd.setCursor(0, LINE_2);
+//  lcd.print(customString);
 }
 
 void batteryVoltageReplyFromThumper(int batteryMillivolts) {
@@ -204,18 +207,18 @@ void batteryVoltageReplyFromThumper(int batteryMillivolts) {
   batteryVoltageReplyLength = robotAsciiCom.prepareBatteryVoltageReply(
       batteryMillivolts, txBuf, sizeof(txBuf));
   // Display battery voltage on LCD.
-  lcd.clear();
-  lcd.print("Battery voltage:");
-  lcd.setCursor(0, LINE_2);
-  lcd.print(batteryMillivolts / 1000);
-  lcd.print(".");
+//  lcd.clear();
+//  lcd.print("Battery voltage:");
+//  lcd.setCursor(0, LINE_2);
+//  lcd.print(batteryMillivolts / 1000);
+//  lcd.print(".");
   if (batteryMillivolts % 1000  < 100) {
-    lcd.print("0");
+//    lcd.print("0");
   }
   if (batteryMillivolts % 1000 < 10) {
-    lcd.print("0");
+//    lcd.print("0");
   }
-  lcd.print(batteryMillivolts % 1000);
+//  lcd.print(batteryMillivolts % 1000);
 }
 
 void wheelCurrentReplyFromThumper(int leftWheelMotorsMilliamps, int rightWheelMotorsMilliamps) {
@@ -225,28 +228,28 @@ void wheelCurrentReplyFromThumper(int leftWheelMotorsMilliamps, int rightWheelMo
       leftWheelMotorsMilliamps, rightWheelMotorsMilliamps, txBuf, sizeof(txBuf));
 
   // Display wheel currents on LCD.
-  lcd.clear();
-  lcd.print("Wheel current:");
-  lcd.setCursor(0, LINE_2);
-  lcd.print(leftWheelMotorsMilliamps / 1000);
-  lcd.print(".");
+//  lcd.clear();
+//  lcd.print("Wheel current:");
+//  lcd.setCursor(0, LINE_2);
+//  lcd.print(leftWheelMotorsMilliamps / 1000);
+//  lcd.print(".");
   if (leftWheelMotorsMilliamps % 1000  < 100) {
-    lcd.print("0");
+//    lcd.print("0");
   }
   if (leftWheelMotorsMilliamps % 1000 < 10) {
-    lcd.print("0");
+//    lcd.print("0");
   }
-  lcd.print(leftWheelMotorsMilliamps % 1000);
-  lcd.print("  ");
-  lcd.print(rightWheelMotorsMilliamps / 1000);
-  lcd.print(".");
+//  lcd.print(leftWheelMotorsMilliamps % 1000);
+//  lcd.print("  ");
+//  lcd.print(rightWheelMotorsMilliamps / 1000);
+//  lcd.print(".");
   if (rightWheelMotorsMilliamps % 1000  < 100) {
-    lcd.print("0");
+//    lcd.print("0");
   }
   if (rightWheelMotorsMilliamps % 1000 < 10) {
-    lcd.print("0");
+//    lcd.print("0");
   }
-  lcd.print(rightWheelMotorsMilliamps % 1000);
+//  lcd.print(rightWheelMotorsMilliamps % 1000);
 }
 
 
