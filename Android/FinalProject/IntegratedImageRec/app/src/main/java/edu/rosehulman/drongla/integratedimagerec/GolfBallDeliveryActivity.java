@@ -45,7 +45,7 @@ public class GolfBallDeliveryActivity extends ImageRecActivity {
     private boolean dropped1;
     private boolean dropped2;
     private boolean dropped3;
-    private int TURN_GAIN = 50;
+    private int TURN_GAIN = 25;
 
     //**************** Calibration ****************
     /*
@@ -394,10 +394,10 @@ public class GolfBallDeliveryActivity extends ImageRecActivity {
             int amount = (int) Math.round((mConeLeftRightLocation * 10) * TURN_GAIN);
             if (mConeLeftRightLocation < 0) {
                 logToDebugWindow(TAG, "Turn left some amount");
-                sendWheelSpeed(100 + amount, 100 - amount);
+                sendWheelSpeed(100 - amount, 100 + amount);
             } else if (mConeLeftRightLocation > 0) {
                 logToDebugWindow(TAG, "Turn right some amount");
-                sendWheelSpeed(100 - amount, 100 + amount);
+                sendWheelSpeed(100 + amount, 100 - amount);
             }
             if (mConeSize > 0.1) {
                 logToDebugWindow(TAG, "May want to stop - the cone is pretty big");
@@ -447,7 +447,7 @@ public class GolfBallDeliveryActivity extends ImageRecActivity {
                             setState(State.DROP_NEAR);
                         else {
                             mNearBallLocation = -1;
-//                            setState(State.DRIVE_TOWARDS_FAR_BALL);
+                            setState(State.DRIVE_TOWARDS_FAR_BALL);
                         }
                         break;
                     case 2:
@@ -455,7 +455,7 @@ public class GolfBallDeliveryActivity extends ImageRecActivity {
                             setState(State.DROP_NEAR);
                         else {
                             mNearBallLocation = -1;
-//                            setState(State.DRIVE_TOWARDS_FAR_BALL);
+                            setState(State.DRIVE_TOWARDS_FAR_BALL);
                         }
                         break;
                     case 3:
@@ -463,11 +463,11 @@ public class GolfBallDeliveryActivity extends ImageRecActivity {
                             setState(State.DROP_NEAR);
                         else {
                             mNearBallLocation = -1;
-//                            setState(State.DRIVE_TOWARDS_FAR_BALL);
+                            setState(State.DRIVE_TOWARDS_FAR_BALL);
                         }
                         break;
                     default:
-//                        setState(State.DRIVE_TOWARDS_FAR_BALL);
+                        setState(State.DRIVE_TOWARDS_FAR_BALL);
                 }
                 break;
             case DRIVE_TOWARDS_FAR_BALL:
@@ -496,7 +496,7 @@ public class GolfBallDeliveryActivity extends ImageRecActivity {
                             setState(State.DROP_FAR);
                         else {
                             mFarBallLocation = -1;
-//                            setState(State.DROP_WHITE);
+                            setState(State.DROP_WHITE);
                         }
                         break;
                     case 2:
@@ -504,7 +504,7 @@ public class GolfBallDeliveryActivity extends ImageRecActivity {
                             setState(State.DROP_FAR);
                         else {
                             mFarBallLocation = -1;
-//                            setState(State.DROP_WHITE);
+                            setState(State.DROP_WHITE);
                         }
                         break;
                     case 3:
@@ -512,11 +512,11 @@ public class GolfBallDeliveryActivity extends ImageRecActivity {
                             setState(State.DROP_FAR);
                         else {
                             mFarBallLocation = -1;
-//                            setState(State.DROP_WHITE);
+                            setState(State.DROP_WHITE);
                         }
                         break;
                     default:
-//                        setState(State.DROP_WHITE);
+                        setState(State.DROP_WHITE);
                 }
                 break;
             case DROP_WHITE:
@@ -541,7 +541,7 @@ public class GolfBallDeliveryActivity extends ImageRecActivity {
                             setState(State.DROP_WHITE);
                         else {
                             mWhiteBallLocation = -1;
-//                            setState(State.DRIVE_TOWARDS_HOME);
+                            setState(State.DRIVE_TOWARDS_HOME);
                         }
                         break;
                     case 2:
@@ -549,7 +549,7 @@ public class GolfBallDeliveryActivity extends ImageRecActivity {
                             setState(State.DROP_WHITE);
                         else {
                             mWhiteBallLocation = -1;
-//                            setState(State.DRIVE_TOWARDS_HOME);
+                            setState(State.DRIVE_TOWARDS_HOME);
                         }
                         break;
                     case 3:
@@ -557,11 +557,11 @@ public class GolfBallDeliveryActivity extends ImageRecActivity {
                             setState(State.DROP_WHITE);
                         else {
                             mWhiteBallLocation = -1;
-//                            setState(State.DRIVE_TOWARDS_HOME);
+                            setState(State.DRIVE_TOWARDS_HOME);
                         }
                         break;
                     default:
-//                        setState(State.DRIVE_TOWARDS_HOME);
+                        setState(State.DRIVE_TOWARDS_HOME);
                 }
                 break;
             case DRIVE_TOWARDS_HOME:
@@ -586,43 +586,43 @@ public class GolfBallDeliveryActivity extends ImageRecActivity {
         }
 
     }
-//
-//    private boolean inIRRegion() {
-////        NavUtils.getDistance()
-//        switch (mState) {
-//            case READY_FOR_MISSION:
-//                break;
-//            case DRIVE_TOWARDS_NEAR_BALL:
-//                break;
-//            case NEAR_IMAGE_REC:
-//                break;
-//            case DROP_NEAR:
-//                break;
-//            case CHECK_DROPPED_NEAR:
-//                break;
-//            case DRIVE_TOWARDS_FAR_BALL:
-//                break;
-//            case FAR_IMAGE_REC:
-//                break;
-//            case DROP_FAR:
-//                break;
-//            case CHECK_DROPPED_FAR:
-//                break;
-//            case DROP_WHITE:
-//                break;
-//            case CHECK_DROPPED_WHITE:
-//                break;
-//            case DRIVE_TOWARDS_HOME:
-//                break;
-//            case WAITING_FOR_PICKUP:
-//                break;
-//            case SEEKING_HOME:
-//                break;
-//            case HOME_IMAGE_REC:
-//                return true;
-//            break;
-//        }
-//    }
+
+    private boolean inIRRegion() {
+//        NavUtils.getDistance()
+        switch (mState) {
+            case READY_FOR_MISSION:
+                break;
+            case DRIVE_TOWARDS_NEAR_BALL:
+                break;
+            case NEAR_IMAGE_REC:
+                return true;
+            case DROP_NEAR:
+                break;
+            case CHECK_DROPPED_NEAR:
+                break;
+            case DRIVE_TOWARDS_FAR_BALL:
+                break;
+            case FAR_IMAGE_REC:
+                return true;
+            case DROP_FAR:
+                break;
+            case CHECK_DROPPED_FAR:
+                break;
+            case DROP_WHITE:
+                break;
+            case CHECK_DROPPED_WHITE:
+                break;
+            case DRIVE_TOWARDS_HOME:
+                break;
+            case WAITING_FOR_PICKUP:
+                break;
+            case SEEKING_HOME:
+                break;
+            case HOME_IMAGE_REC:
+                return true;
+        }
+        return false;
+    }
 
     public void handleDropNearButton(View view) {
         setState(State.DROP_NEAR);
