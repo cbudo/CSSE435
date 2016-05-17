@@ -17,6 +17,7 @@ import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.NumberPicker;
+import android.widget.ScrollView;
 import android.widget.TableLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -36,6 +37,11 @@ public class GolfBallDeliveryActivity extends ImageRecActivity {
      * Constant used with logging that you'll see later.
      */
     public static final String TAG = "GolfBallDelivery";
+    private TextView mDebugLogger;
+    private ScrollView mDebugScroller;
+    private boolean mHasDebugTextview = false;
+
+
     private boolean dropped1;
     private boolean dropped2;
     private boolean dropped3;
@@ -47,6 +53,7 @@ public class GolfBallDeliveryActivity extends ImageRecActivity {
      */
     private ObjectInputStream inputStream;
     private ObjectOutputStream outputStream;
+
 
     private enum CalibrationStatus {
         CALIBRATED, NOT_CALIBRATED, NOW_CALIBRATING
@@ -211,9 +218,9 @@ public class GolfBallDeliveryActivity extends ImageRecActivity {
             }
 
 
-            Log.d(TAG, "Near ball is position " + mNearBallLocation + " so drive to " + mNearBallGpsY);
-            Log.d(TAG, "Far ball is position " + mFarBallLocation + " so drive to " + mFarBallGpsY);
-            Log.d(TAG, "White ball is position " + mWhiteBallLocation);
+            logToDebugWindow(TAG, "Near ball is position " + mNearBallLocation + " so drive to " + mNearBallGpsY);
+            logToDebugWindow(TAG, "Far ball is position " + mFarBallLocation + " so drive to " + mFarBallGpsY);
+            logToDebugWindow(TAG, "White ball is position " + mWhiteBallLocation);
         }
     }
     // ----------------- End of mission strategy values ----------------------
@@ -386,14 +393,14 @@ public class GolfBallDeliveryActivity extends ImageRecActivity {
             }
             int amount = (int) Math.round((mConeLeftRightLocation * 10) * TURN_GAIN);
             if (mConeLeftRightLocation < 0) {
-                Log.d(TAG, "Turn left some amount");
+                logToDebugWindow(TAG, "Turn left some amount");
                 sendWheelSpeed(100 + amount, 100 - amount);
             } else if (mConeLeftRightLocation > 0) {
-                Log.d(TAG, "Turn right some amount");
+                logToDebugWindow(TAG, "Turn right some amount");
                 sendWheelSpeed(100 - amount, 100 + amount);
             }
             if (mConeSize > 0.1) {
-                Log.d(TAG, "May want to stop - the cone is pretty big");
+                logToDebugWindow(TAG, "May want to stop - the cone is pretty big");
                 if (mState == State.NEAR_IMAGE_REC)
                     setState(State.DROP_NEAR);
                 else if (mState == State.FAR_IMAGE_REC)
@@ -837,7 +844,7 @@ public class GolfBallDeliveryActivity extends ImageRecActivity {
         int endIndex = receivedCommand.indexOf(']');
         if (startIndex == -1 || endIndex == -1) {
             Toast.makeText(GolfBallDeliveryActivity.this, "Error! Malformed data", Toast.LENGTH_SHORT).show();
-            Log.e(TAG, "Malformed Data " + receivedCommand);
+            logToDebugWindow(TAG, "Malformed Data " + receivedCommand);
             return;
         }
         String data = receivedCommand.substring(startIndex + 1, endIndex - 1);
@@ -1345,4 +1352,30 @@ public class GolfBallDeliveryActivity extends ImageRecActivity {
         }
 
     }
+
+    public void registerDebugWindow(TextView tv, ScrollView sv){
+        mDebugLogger = tv;
+        mDebugScroller = sv;
+        tv.setText("Opened Logger \n");
+        mHasDebugTextview = true;
+    }
+    private void scrollToBottom()
+    {
+        mDebugScroller.post(new Runnable()
+        {
+            public void run()
+            {
+                mDebugScroller.smoothScrollTo(0, mDebugLogger.getBottom());
+            }
+        });
+    }
+
+    public void logToDebugWindow(String tag, String message){
+        if (mHasDebugTextview) {
+            mDebugLogger.append('\n' + tag +">"+message);
+            scrollToBottom();
+        }
+        Log.d(tag, message);
+    }
+
 }

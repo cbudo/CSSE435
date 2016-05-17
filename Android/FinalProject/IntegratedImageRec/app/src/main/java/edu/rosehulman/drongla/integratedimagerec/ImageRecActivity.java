@@ -100,6 +100,7 @@ public class ImageRecActivity extends RobotActivity implements CameraBridgeViewB
     };
     private Mat mRgba;
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -535,5 +536,7 @@ public class ImageRecActivity extends RobotActivity implements CameraBridgeViewB
 
         return false; // don't need subsequent touch events
     }
+
+
 }
 

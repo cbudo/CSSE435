@@ -6,6 +6,8 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ScrollView;
+import android.widget.TextView;
 import android.widget.ViewFlipper;
 
 public class MainActivity extends GolfBallDeliveryActivity {
@@ -20,6 +22,7 @@ public class MainActivity extends GolfBallDeliveryActivity {
         setSupportActionBar(toolbar);
         jumbotron_button = (Button) findViewById(R.id.button_jumbotron);
         mViewFlipper = (ViewFlipper)findViewById(R.id.my_view_flipper);
+        registerDebugWindow((TextView) findViewById(R.id.SCROLLING_DEBUG_LOGGGER), (ScrollView) findViewById(R.id.SCROLLING_DEBUG_VIEW));
     }
 
     @Override

@@ -87,7 +87,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@+id/fake_gps_button_table"
-        android:layout_alignParentStart="true">
+        android:layout_alignParentStart="true"
+        >
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -242,7 +243,7 @@
             <Button
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:background="@drawable/red_button"
+                android:background="@drawable/black_button"
                 android:textColor="#fff"
                 android:text="Drop Far"
                 android:layout_weight="1"
@@ -250,6 +251,27 @@
                 android:id="@+id/dropFarButton"
                 android:onClick="handleDropFarButton"
                 />
+        </LinearLayout>
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent">
+
+            <ScrollView
+                android:id="@+id/SCROLLING_DEBUG_VIEW"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:scrollbars="vertical"
+                android:fillViewport="true">
+
+                <TextView
+                    android:id="@+id/SCROLLING_DEBUG_LOGGGER"
+                    android:layout_width="fill_parent"
+                    android:layout_height="fill_parent"
+                    android:layout_weight="1.0"/>
+
+            </ScrollView>
+
         </LinearLayout>
     </LinearLayout>
 
