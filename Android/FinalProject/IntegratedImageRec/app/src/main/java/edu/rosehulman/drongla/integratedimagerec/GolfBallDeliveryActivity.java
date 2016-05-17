@@ -67,14 +67,17 @@ public class GolfBallDeliveryActivity extends ImageRecActivity {
         READY_FOR_MISSION,
         NEAR_BALL_SCRIPT,
         NEAR_IMAGE_REC,
+        DROP_NEAR,
         CHECK_DROPPED_NEAR,
         DRIVE_TOWARDS_FAR_BALL,
         FAR_IMAGE_REC,
+        DROP_FAR,
         CHECK_DROPPED_FAR,
+        DROP_WHITE,
         CHECK_DROPPED_WHITE,
         DRIVE_TOWARDS_HOME,
         WAITING_FOR_PICKUP,
-        SEEKING_HOME,
+        SEEKING_HOME, HOME_IMAGE_REC,
     }
 
     /**
@@ -141,6 +144,8 @@ public class GolfBallDeliveryActivity extends ImageRecActivity {
      * For example if we have the black ball, then mWhiteBallLocation will equal 0.
      */
     public int mNearBallLocation, mFarBallLocation, mWhiteBallLocation;
+
+    private boolean mRunningScript = false;
 
     /**
      * Updates the mission strategy variables.
@@ -264,7 +269,7 @@ public class GolfBallDeliveryActivity extends ImageRecActivity {
         calibrateButton = (Button) findViewById(R.id.calibrateButton);
         loadCalibration = (Button) findViewById(R.id.loadCalibration);
         debugTestBalls = (Button) findViewById(R.id.buttonDebugBallTest);
-
+        mRunningScript = false;
 
         mScripts = new Scripts(this);
     }
@@ -320,20 +325,114 @@ public class GolfBallDeliveryActivity extends ImageRecActivity {
 
         mMatchTimeTextView.setText(getString(R.string.time_format, timeRemainingSeconds / 60, timeRemainingSeconds % 60));
         mGuessXYTextView.setText("(" + (int) mGuessX + ", " + (int) mGuessY + ")");
-
-        if (mConeFound) {
+        if (mState == State.FAR_IMAGE_REC || mState == State.NEAR_IMAGE_REC || mState == State.HOME_IMAGE_REC) {
+            if (!mConeFound) {
+                //exit state, lost cone
+                Toast.makeText(GolfBallDeliveryActivity.this, "Cone = Lost", Toast.LENGTH_SHORT).show();
+            }
+            int amount = (int) Math.round((mConeLeftRightLocation * 10) * 50);
             if (mConeLeftRightLocation < 0) {
                 Log.d(TAG, "Turn left some amount");
-
+                sendWheelSpeed(100 + amount, 100 - amount);
+            } else if (mConeLeftRightLocation > 0) {
+                Log.d(TAG, "Turn right some amount");
+                sendWheelSpeed(100 - amount, 100 + amount);
             }
             if (mConeSize > 0.1) {
                 Log.d(TAG, "May want to stop - the cone is pretty big");
+                if (mState == State.NEAR_IMAGE_REC)
+                    setState(State.DROP_NEAR);
+                else if (mState == State.FAR_IMAGE_REC)
+                    setState(State.DROP_FAR);
+                else if (mState == State.HOME_IMAGE_REC)
+                    setState(State.WAITING_FOR_PICKUP);
+            }
+        } else {
+            if (mConeFound) {
+                // set ir Near, Far, Home
+                if (mState == State.NEAR_BALL_SCRIPT)
+                    setState(State.NEAR_IMAGE_REC);
+                else if (mState == State.DRIVE_TOWARDS_FAR_BALL)
+                    setState(State.FAR_IMAGE_REC);
+                else if (mState == State.DRIVE_TOWARDS_HOME)
+                    setState(State.HOME_IMAGE_REC);
             }
         }
-
         switch (mState) {
+            case READY_FOR_MISSION:
+                break;
+            case NEAR_BALL_SCRIPT:
+                break;
+            case NEAR_IMAGE_REC:
+                break;
+            case DROP_NEAR:
+                if (!mRunningScript) {
+                    mRunningScript = true;
+                    mScripts.removeBallAtLocation(mNearBallLocation);
+                    mCommandHandler.postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            mRunningScript = false;
+                        }
+                    }, 3000);
+                }
+                break;
+            case CHECK_DROPPED_NEAR:
+                break;
             case DRIVE_TOWARDS_FAR_BALL:
                 seekTargetAt(FAR_BALL_GPS_X, mFarBallGpsY);
+                break;
+            case FAR_IMAGE_REC:
+                break;
+            case DROP_FAR:
+                if (!mRunningScript) {
+                    mRunningScript = true;
+                    mScripts.removeBallAtLocation(mFarBallLocation);
+                    mCommandHandler.postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            mRunningScript = false;
+                        }
+                    }, 3000);
+                }
+                break;
+            case CHECK_DROPPED_FAR:
+                break;
+            case DROP_WHITE:
+                if (!mRunningScript) {
+                    mRunningScript = true;
+                    mScripts.removeBallAtLocation(mWhiteBallLocation);
+                    mCommandHandler.postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            mRunningScript = false;
+                        }
+                    }, 3000);
+                }
+                break;
+            case CHECK_DROPPED_WHITE:
+                switch (mWhiteBallLocation) {
+                    case 1:
+                        if (!dropped1)
+                            setState(State.DROP_WHITE);
+                        else
+                            setState(State.DRIVE_TOWARDS_HOME);
+                        break;
+                    case 2:
+                        if (!dropped2)
+                            setState(State.DROP_WHITE);
+                        else
+                            setState(State.DRIVE_TOWARDS_HOME);
+                        break;
+                    case 3:
+                        if (!dropped3)
+                            setState(State.DROP_WHITE);
+                        else
+                            setState(State.DRIVE_TOWARDS_HOME);
+                        break;
+                    default:
+                        setState(State.DRIVE_TOWARDS_HOME);
+                }
                 break;
             case DRIVE_TOWARDS_HOME:
                 seekTargetAt(0, 0);
@@ -583,7 +682,7 @@ public class GolfBallDeliveryActivity extends ImageRecActivity {
                     calibrationData[idMatrix[i]][j][i] = Integer.parseInt(splitData[j]);
                 }
                 // Auto-next stage
-                if(( i == 2)){
+                if ((i == 2)) {
                     handleCalibration(null);
                 }
                 break;
@@ -728,6 +827,8 @@ public class GolfBallDeliveryActivity extends ImageRecActivity {
                 break;
             case NEAR_IMAGE_REC:
                 break;
+            case DROP_NEAR:
+                break;
             case CHECK_DROPPED_NEAR:
                 break;
             case DRIVE_TOWARDS_FAR_BALL:
@@ -736,7 +837,11 @@ public class GolfBallDeliveryActivity extends ImageRecActivity {
             case FAR_IMAGE_REC:
                 mScripts.farBallScript();
                 break;
+            case DROP_FAR:
+                break;
             case CHECK_DROPPED_FAR:
+                break;
+            case DROP_WHITE:
                 break;
             case CHECK_DROPPED_WHITE:
                 break;
