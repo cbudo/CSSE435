@@ -31,198 +31,201 @@ import java.util.List;
 import edu.rosehulman.me435.NavUtils;
 
 public class GolfBallDeliveryActivity extends ImageRecActivity {
-
-
-    private boolean read_1=false, read_2=false, read_3=false;
-
+    //**************** Debug and Logging ****************
     /**
      * Constant used with logging that you'll see later.
      */
-    public static final String TAG = "GolfBallDelivery";
-    private ObjectInputStream inputStream;
-    private ObjectOutputStream outputStream;
+        public static final String TAG = "GolfBallDelivery";
 
-    /**
-     * An enum used for calibration
+    //**************** Calibration ****************
+    /*
+        Saving and loading Calibration
      */
-    private enum CalibrationStatus {
-        CALIBRATED, NOT_CALIBRATED, NOW_CALIBRATING
-    }
+        private ObjectInputStream inputStream;
+        private ObjectOutputStream outputStream;
 
-    private CalibrationStatus cal_state;
-    private int cal_stage = -1;
-    private Button calibrateButton, loadCalibration, debugTestBalls;
-
-    String filename = "cal.data";
-    private int calibrationData[][][] = new int[7][7][3]; //  7 colors, 7 readings, 3 sensors.
-    private int idMatrix[] = new int[3];
-
-    private TextView m_text_debug_1, m_text_debug_2, m_text_debug_3;
-    private int debug_score_1, debug_score_2, debug_score_3;
-    private GolfBallObject debug_second_1, debug_second_2, debug_second_3;
-    /**
-     * An enum used for variables when a ball color needs to be referenced.
-     */
-    public enum BallColor {
-        NONE, BLUE, RED, YELLOW, GREEN, BLACK, WHITE
-    }
-
-    public enum State {
-        READY_FOR_MISSION,
-        NEAR_BALL_SCRIPT,
-        NEAR_IMAGE_REC,
-        CHECK_DROPPED_NEAR,
-        DRIVE_TOWARDS_FAR_BALL,
-        FAR_IMAGE_REC,
-        CHECK_DROPPED_FAR,
-        CHECK_DROPPED_WHITE,
-        DRIVE_TOWARDS_HOME,
-        WAITING_FOR_PICKUP,
-        SEEKING_HOME,
-    }
-    private class GolfBallObject implements Comparable<GolfBallObject>{
-        public BallColor color;
-        public int score;
-
-        public GolfBallObject(BallColor c, int s){
-            color = c;
-            score = s;
+        private enum CalibrationStatus {
+            CALIBRATED, NOT_CALIBRATED, NOW_CALIBRATING
         }
 
-        @Override
-        public int compareTo(GolfBallObject another) {
-            return score - another.score;
-        }
-    }
-    /**
-     * Tracks the robot's current state.
-     */
-    public State mState;
+        private CalibrationStatus cal_state;
+        private int cal_stage = -1;
+        private Button calibrateButton, loadCalibration, debugTestBalls;
 
+        String filename = "cal.data";
+        private int calibrationData[][][] = new int[7][7][3]; //  7 colors, 7 readings, 3 sensors.
+        private int idMatrix[] = new int[3];
+
+        private boolean read_1=false, read_2=false, read_3=false;
+
+    //**************** Golf Ball Stand ****************
     /**
      * An array (of size 3) that stores what color is present in each golf ball stand location.
      */
-    public BallColor[] mLocationColors = new BallColor[]{BallColor.NONE, BallColor.NONE, BallColor.NONE};
+        public BallColor[] mLocationColors = new BallColor[]{BallColor.NONE, BallColor.NONE, BallColor.NONE};
 
+        private TextView m_text_debug_1, m_text_debug_2, m_text_debug_3;
+        private int debug_score_1, debug_score_2, debug_score_3;
+        private GolfBallObject debug_second_1, debug_second_2, debug_second_3;
     /**
-     * Simple boolean that is updated when the Team button is pressed to switch teams.
+     * An enum used for variables when a ball color needs to be referenced.
      */
-    public boolean mOnRedTeam = false;
+        public enum BallColor {
+            NONE, BLUE, RED, YELLOW, GREEN, BLACK, WHITE
+        }
+        private class GolfBallObject implements Comparable<GolfBallObject>{
+            public BallColor color;
+            public int score;
 
-    private Scripts mScripts;
+            public GolfBallObject(BallColor c, int s){
+                color = c;
+                score = s;
+            }
 
-    // ---------------------- UI References ----------------------
-    /**
-     * An array (of size 3) that keeps a reference to the 3 balls displayed on the UI.
-     */
-    private ImageButton[] mBallImageButtons;
-
-    /**
-     * References to the buttons on the UI that can change color.
-     */
-    private Button mTeamChangeButton, mGoOrMissionCompleteButton;
-
-    /**
-     * An array constants (of size 7) that keeps a reference to the different ball color images resources.
-     */
-    // Note, the order is important and must be the same throughout the app.
-    private static final int[] BALL_DRAWABLE_RESOURCES = new int[]{R.drawable.none_ball, R.drawable.blue_ball,
-            R.drawable.red_ball, R.drawable.yellow_ball, R.drawable.green_ball, R.drawable.black_ball, R.drawable.white_ball};
-
-    /**
-     * TextViews that can change values.
-     */
-    private TextView mCurrentStateTextView, mStateTimeTextView, mGpsInfoTextView, mSensorOrientationTextView,
-            mGuessXYTextView, mLeftDutyCycleTextView, mRightDutyCycleTextView, mMatchTimeTextView;
-
-    // ---------------------- End of UI References ----------------------
-    private TextView mJumboXTextView, mJumboYTextView;
-    private Button mJumbotron_button;
-    private LinearLayout mJumbotronLayout;
-    // ---------------------- Mission strategy values ----------------------
-    /**
-     * Constants for the known locations.
-     */
-    public static final long NEAR_BALL_GPS_X = 90;
-    public static final long FAR_BALL_GPS_X = 240;
-
-
-    /**
-     * Variables that will be either 50 or -50 depending on the balls we get.
-     */
-    private double mNearBallGpsY, mFarBallGpsY;
-
-    /**
-     * If that ball is present the values will be 1, 2, or 3.
-     * If not present the value will be 0.
-     * For example if we have the black ball, then mWhiteBallLocation will equal 0.
-     */
-    public int mNearBallLocation, mFarBallLocation, mWhiteBallLocation;
-
-    /**
-     * Updates the mission strategy variables.
-     */
-    private void updateMissionStrategyVariables() {
-        mNearBallGpsY = -50.0; // Note, X value is a constant.
-        mFarBallGpsY = 50.0; // Note, X value is a constant.
-        mNearBallLocation = 1;
-        mWhiteBallLocation = 0; // Assume there is no white ball present for now (update later).
-        mFarBallLocation = 3;
-
-        // Example of doing real planning.
-        for (int i = 0; i < 3; i++) {
-            BallColor currentLocationsBallColor = mLocationColors[i];
-            if (currentLocationsBallColor == BallColor.WHITE) {
-                mWhiteBallLocation = i + 1;
+            @Override
+            public int compareTo(GolfBallObject another) {
+                return score - another.score;
             }
         }
+    //**************** State Machine ****************
+        public enum State {
+            READY_FOR_MISSION,
+            NEAR_BALL_SCRIPT,
+            NEAR_IMAGE_REC,
+            CHECK_DROPPED_NEAR,
+            DRIVE_TOWARDS_FAR_BALL,
+            FAR_IMAGE_REC,
+            CHECK_DROPPED_FAR,
+            CHECK_DROPPED_WHITE,
+            DRIVE_TOWARDS_HOME,
+            WAITING_FOR_PICKUP,
+            SEEKING_HOME,
+        }
+        /**
+         * Tracks the robot's current state.
+         */
+        public State mState;
 
-        Log.d(TAG, "Near ball is position " + mNearBallLocation + " so drive to " + mNearBallGpsY);
-        Log.d(TAG, "Far ball is position " + mFarBallLocation + " so drive to " + mFarBallGpsY);
-        Log.d(TAG, "White ball is position " + mWhiteBallLocation);
-    }
+
+        /**
+         * Simple boolean that is updated when the Team button is pressed to switch teams.
+         */
+        public boolean mOnRedTeam = false;
+
+        private Scripts mScripts;
+
+    // ---------------------- UI References ----------------------
+        /**
+         * An array (of size 3) that keeps a reference to the 3 balls displayed on the UI.
+         */
+        private ImageButton[] mBallImageButtons;
+
+        /**
+         * References to the buttons on the UI that can change color.
+         */
+        private Button mTeamChangeButton, mGoOrMissionCompleteButton,mJumbotron_button;
+
+        /**
+         * An array constants (of size 7) that keeps a reference to the different ball color images resources.
+         */
+        // Note, the order is important and must be the same throughout the app.
+        private static final int[] BALL_DRAWABLE_RESOURCES = new int[]{R.drawable.none_ball, R.drawable.blue_ball,
+                R.drawable.red_ball, R.drawable.yellow_ball, R.drawable.green_ball, R.drawable.black_ball, R.drawable.white_ball};
+
+        /**
+         * TextViews that can change values.
+         */
+        private TextView mCurrentStateTextView, mStateTimeTextView, mGpsInfoTextView, mSensorOrientationTextView,
+                mGuessXYTextView, mLeftDutyCycleTextView, mRightDutyCycleTextView, mMatchTimeTextView, mTargetTextView,mJumboXTextView, mJumboYTextView;
+
+
+        private LinearLayout mJumbotronLayout;
+    // ---------------------- End of UI References ----------------------
+
+    // ---------------------- Mission strategy values ----------------------
+        /**
+         * Constants for the known locations.
+         */
+        public static final long NEAR_BALL_GPS_X = 90;
+        public static final long FAR_BALL_GPS_X = 240;
+
+
+        /**
+         * Variables that will be either 50 or -50 depending on the balls we get.
+         */
+        private double mNearBallGpsY, mFarBallGpsY;
+
+        /**
+         * If that ball is present the values will be 1, 2, or 3.
+         * If not present the value will be 0.
+         * For example if we have the black ball, then mWhiteBallLocation will equal 0.
+         */
+        public int mNearBallLocation, mFarBallLocation, mWhiteBallLocation;
+
+        /**
+         * Updates the mission strategy variables.
+         */
+        private void updateMissionStrategyVariables() {
+            mNearBallGpsY = -50.0; // Note, X value is a constant.
+            mFarBallGpsY = 50.0; // Note, X value is a constant.
+            mNearBallLocation = 1;
+            mWhiteBallLocation = 0; // Assume there is no white ball present for now (update later).
+            mFarBallLocation = 3;
+
+            // Example of doing real planning.
+            for (int i = 0; i < 3; i++) {
+                BallColor currentLocationsBallColor = mLocationColors[i];
+                if (currentLocationsBallColor == BallColor.WHITE) {
+                    mWhiteBallLocation = i + 1;
+                }
+            }
+
+            Log.d(TAG, "Near ball is position " + mNearBallLocation + " so drive to " + mNearBallGpsY);
+            Log.d(TAG, "Far ball is position " + mFarBallLocation + " so drive to " + mFarBallGpsY);
+            Log.d(TAG, "White ball is position " + mWhiteBallLocation);
+        }
     // ----------------- End of mission strategy values ----------------------
 
 
     // ---------------------------- Timing area ------------------------------
-    /**
-     * Time when the state began (saved as the number of millisecond since epoch).
-     */
-    private long mStateStartTime;
+        /**
+         * Time when the state began (saved as the number of millisecond since epoch).
+         */
+        private long mStateStartTime;
 
-    /**
-     * Time when the match began, ie when Go! was pressed (saved as the number of millisecond since epoch).
-     */
-    private long mMatchStartTime;
+        /**
+         * Time when the match began, ie when Go! was pressed (saved as the number of millisecond since epoch).
+         */
+        private long mMatchStartTime;
 
-    /**
-     * Constant that holds the maximum length of the match (saved in milliseconds).
-     */
-    private long MATCH_LENGTH_MS = 300000; // 5 minutes in milliseconds (5 * 60 * 1000)
+        /**
+         * Constant that holds the maximum length of the match (saved in milliseconds).
+         */
+        private long MATCH_LENGTH_MS = 300000; // 5 minutes in milliseconds (5 * 60 * 1000)
     // ----------------------- End of timing area --------------------------------
 
 
     // ---------------------------- Driving area ---------------------------------
-    /**
-     * When driving towards a target, using a seek strategy, consider that state a success when the
-     * GPS distance to the target is less than (or equal to) this value.
-     */
-    public static final double ACCEPTED_DISTANCE_AWAY_FT = 10.0; // Within 10 feet is close enough.
+        /**
+         * When driving towards a target, using a seek strategy, consider that state a success when the
+         * GPS distance to the target is less than (or equal to) this value.
+         */
+        public static final double ACCEPTED_DISTANCE_AWAY_FT = 10.0; // Within 10 feet is close enough.
 
-    /**
-     * Multiplier used during seeking to calculate a PWM value based on the turn amount needed.
-     */
-    private static final double SEEKING_DUTY_CYCLE_PER_ANGLE_OFF_MULTIPLIER = 3.0;  // units are (PWM value)/degrees
+        /**
+         * Multiplier used during seeking to calculate a PWM value based on the turn amount needed.
+         */
+        private static final double SEEKING_DUTY_CYCLE_PER_ANGLE_OFF_MULTIPLIER = 3.0;  // units are (PWM value)/degrees
 
-    /**
-     * Variable used to cap the slowest PWM duty cycle used while seeking. Pick a value from -255 to 255.
-     */
-    private static final int LOWEST_DESIRABLE_SEEKING_DUTY_CYCLE = 150;
+        /**
+         * Variable used to cap the slowest PWM duty cycle used while seeking. Pick a value from -255 to 255.
+         */
+        private static final int LOWEST_DESIRABLE_SEEKING_DUTY_CYCLE = 150;
 
-    /**
-     * PWM duty cycle values used with the drive straight dialog that make your robot drive straightest.
-     */
-    public int mLeftStraightPwmValue = 255, mRightStraightPwmValue = 255;
+        /**
+         * PWM duty cycle values used with the drive straight dialog that make your robot drive straightest.
+         */
+        public int mLeftStraightPwmValue = 255, mRightStraightPwmValue = 255;
     // ------------------------ End of Driving area ------------------------------
 
 
@@ -251,6 +254,9 @@ public class GolfBallDeliveryActivity extends ImageRecActivity {
         mJumboYTextView = (TextView) findViewById(R.id.jumbo_y);
 
         mJumbotronLayout = (LinearLayout) findViewById(R.id.jumbotron_linear_layout);
+        mTargetTextView = (TextView) findViewById(R.id.target_location_textview);
+        mTargetX = 0;
+        mTargetY = 0;
 
         // When you start using the real hardware you don't need test buttons.
         boolean hideFakeGpsButtons = false;
@@ -377,6 +383,11 @@ public class GolfBallDeliveryActivity extends ImageRecActivity {
      * @param y GPS Y value of the target.
      */
     private void seekTargetAt(double x, double y) {
+        mTargetX = x;
+        mTargetY = y;
+        //target_location_textview
+        mTargetTextView.setText("(" + (int) mTargetX + ", " + (int) mTargetY + ")" + "  ?" );
+
         int leftDutyCycle = mLeftStraightPwmValue;
         int rightDutyCycle = mRightStraightPwmValue;
         double targetHeading = NavUtils.getTargetHeading(mGuessX, mGuessY, x, y);
@@ -434,6 +445,9 @@ public class GolfBallDeliveryActivity extends ImageRecActivity {
                 setState(State.WAITING_FOR_PICKUP);
             }
         }
+
+        mTargetTextView.setText("(" + (int) mTargetX + ", " + (int) mTargetY + ")" + " "+ (int) mCurrentGpsDistance);
+
     }
 
     public void handleSetOrigin(View view) {
