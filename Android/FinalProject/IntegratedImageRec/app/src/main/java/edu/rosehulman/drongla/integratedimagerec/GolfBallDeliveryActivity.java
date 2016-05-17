@@ -32,23 +32,22 @@ import edu.rosehulman.me435.NavUtils;
 
 public class GolfBallDeliveryActivity extends ImageRecActivity {
 
-
-    private boolean read_1 = false, read_2 = false, read_3 = false;
-
     /**
      * Constant used with logging that you'll see later.
      */
     public static final String TAG = "GolfBallDelivery";
-    private ObjectInputStream inputStream;
-    private ObjectOutputStream outputStream;
     private boolean dropped1;
     private boolean dropped2;
     private boolean dropped3;
     private int TURN_GAIN = 50;
 
-    /**
-     * An enum used for calibration
+    //**************** Calibration ****************
+    /*
+        Saving and loading Calibration
      */
+    private ObjectInputStream inputStream;
+    private ObjectOutputStream outputStream;
+
     private enum CalibrationStatus {
         CALIBRATED, NOT_CALIBRATED, NOW_CALIBRATING
     }
@@ -61,6 +60,14 @@ public class GolfBallDeliveryActivity extends ImageRecActivity {
     private int calibrationData[][][] = new int[7][7][3]; //  7 colors, 7 readings, 3 sensors.
     private int idMatrix[] = new int[3];
 
+    private boolean read_1 = false, read_2 = false, read_3 = false;
+
+    //**************** Golf Ball Stand ****************
+    /**
+     * An array (of size 3) that stores what color is present in each golf ball stand location.
+     */
+    public BallColor[] mLocationColors = new BallColor[]{BallColor.NONE, BallColor.NONE, BallColor.NONE};
+
     private TextView m_text_debug_1, m_text_debug_2, m_text_debug_3;
     private int debug_score_1, debug_score_2, debug_score_3;
     private GolfBallObject debug_second_1, debug_second_2, debug_second_3;
@@ -70,23 +77,6 @@ public class GolfBallDeliveryActivity extends ImageRecActivity {
      */
     public enum BallColor {
         NONE, BLUE, RED, YELLOW, GREEN, BLACK, WHITE
-    }
-
-    public enum State {
-        READY_FOR_MISSION,
-        DRIVE_TOWARDS_NEAR_BALL,
-        NEAR_IMAGE_REC,
-        DROP_NEAR,
-        CHECK_DROPPED_NEAR,
-        DRIVE_TOWARDS_FAR_BALL,
-        FAR_IMAGE_REC,
-        DROP_FAR,
-        CHECK_DROPPED_FAR,
-        DROP_WHITE,
-        CHECK_DROPPED_WHITE,
-        DRIVE_TOWARDS_HOME,
-        WAITING_FOR_PICKUP,
-        SEEKING_HOME, HOME_IMAGE_REC,
     }
 
     private class GolfBallObject implements Comparable<GolfBallObject> {
@@ -104,15 +94,30 @@ public class GolfBallDeliveryActivity extends ImageRecActivity {
         }
     }
 
+    //**************** State Machine ****************
+    public enum State {
+        READY_FOR_MISSION,
+        DRIVE_TOWARDS_NEAR_BALL,
+        DROP_NEAR,
+        NEAR_IMAGE_REC,
+        CHECK_DROPPED_NEAR,
+        DRIVE_TOWARDS_FAR_BALL,
+        FAR_IMAGE_REC,
+        DROP_FAR,
+        CHECK_DROPPED_FAR,
+        DROP_WHITE,
+        CHECK_DROPPED_WHITE,
+        DRIVE_TOWARDS_HOME,
+        WAITING_FOR_PICKUP,
+        SEEKING_HOME,
+        HOME_IMAGE_REC,
+    }
+
     /**
      * Tracks the robot's current state.
      */
     public State mState;
 
-    /**
-     * An array (of size 3) that stores what color is present in each golf ball stand location.
-     */
-    public BallColor[] mLocationColors = new BallColor[]{BallColor.NONE, BallColor.NONE, BallColor.NONE};
 
     /**
      * Simple boolean that is updated when the Team button is pressed to switch teams.
@@ -130,7 +135,7 @@ public class GolfBallDeliveryActivity extends ImageRecActivity {
     /**
      * References to the buttons on the UI that can change color.
      */
-    private Button mTeamChangeButton, mGoOrMissionCompleteButton;
+    private Button mTeamChangeButton, mGoOrMissionCompleteButton, mJumbotron_button;
 
     /**
      * An array constants (of size 7) that keeps a reference to the different ball color images resources.
@@ -143,12 +148,12 @@ public class GolfBallDeliveryActivity extends ImageRecActivity {
      * TextViews that can change values.
      */
     private TextView mCurrentStateTextView, mStateTimeTextView, mGpsInfoTextView, mSensorOrientationTextView,
-            mGuessXYTextView, mLeftDutyCycleTextView, mRightDutyCycleTextView, mMatchTimeTextView, mJumboStateView;
+            mGuessXYTextView, mLeftDutyCycleTextView, mRightDutyCycleTextView, mMatchTimeTextView, mTargetTextView, mJumboXTextView, mJumboYTextView, mJumboStateView;
 
-    // ---------------------- End of UI References ----------------------
-    private TextView mJumboXTextView, mJumboYTextView;
-    private Button mJumbotron_button;
+
     private LinearLayout mJumbotronLayout;
+    // ---------------------- End of UI References ----------------------
+
     // ---------------------- Mission strategy values ----------------------
     /**
      * Constants for the known locations.
@@ -202,13 +207,14 @@ public class GolfBallDeliveryActivity extends ImageRecActivity {
             if ((ballColor == BallColor.GREEN && mOnRedTeam) ||
                     (ballColor == BallColor.YELLOW && !mOnRedTeam)) {
                 mNearBallGpsY = 50;
+
             }
+
+
+            Log.d(TAG, "Near ball is position " + mNearBallLocation + " so drive to " + mNearBallGpsY);
+            Log.d(TAG, "Far ball is position " + mFarBallLocation + " so drive to " + mFarBallGpsY);
+            Log.d(TAG, "White ball is position " + mWhiteBallLocation);
         }
-
-
-        Log.d(TAG, "Near ball is position " + mNearBallLocation + " so drive to " + mNearBallGpsY);
-        Log.d(TAG, "Far ball is position " + mFarBallLocation + " so drive to " + mFarBallGpsY);
-        Log.d(TAG, "White ball is position " + mWhiteBallLocation);
     }
     // ----------------- End of mission strategy values ----------------------
 
@@ -280,6 +286,9 @@ public class GolfBallDeliveryActivity extends ImageRecActivity {
         mJumboYTextView = (TextView) findViewById(R.id.jumbo_y);
 
         mJumbotronLayout = (LinearLayout) findViewById(R.id.jumbotron_linear_layout);
+        mTargetTextView = (TextView) findViewById(R.id.target_location_textview);
+        mTargetX = 0;
+        mTargetY = 0;
 
         // When you start using the real hardware you don't need test buttons.
         boolean hideFakeGpsButtons = false;
@@ -627,6 +636,11 @@ public class GolfBallDeliveryActivity extends ImageRecActivity {
      * @param y GPS Y value of the target.
      */
     private void seekTargetAt(double x, double y) {
+        mTargetX = x;
+        mTargetY = y;
+        //target_location_textview
+        mTargetTextView.setText("(" + (int) mTargetX + ", " + (int) mTargetY + ")" + "  ?");
+
         int leftDutyCycle = mLeftStraightPwmValue;
         int rightDutyCycle = mRightStraightPwmValue;
         double targetHeading = NavUtils.getTargetHeading(mGuessX, mGuessY, x, y);
@@ -684,6 +698,9 @@ public class GolfBallDeliveryActivity extends ImageRecActivity {
                 setState(State.WAITING_FOR_PICKUP);
             }
         }
+
+        mTargetTextView.setText("(" + (int) mTargetX + ", " + (int) mTargetY + ")" + " " + (int) mCurrentGpsDistance);
+
     }
 
     public void handleSetOrigin(View view) {

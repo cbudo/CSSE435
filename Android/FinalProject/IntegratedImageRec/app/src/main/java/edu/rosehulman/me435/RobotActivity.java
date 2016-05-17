@@ -132,7 +132,10 @@ public class RobotActivity extends AccessoryActivity implements FieldGpsListener
   public static final double RED_HOME_LONGITUDE = -87.325922;
   public static final double BLUE_HOME_LATITUDE = 39.485549; // Middle of the end zone near the tennis courts
   public static final double BLUE_HOME_LONGITUDE = -87.324796;
-  
+
+  public double mTargetX = 0;
+    public double mTargetY =0;
+
   /** Function called 10 times per second. */
   public void loop() {
     if (mMovingForward) {
@@ -187,7 +190,7 @@ public class RobotActivity extends AccessoryActivity implements FieldGpsListener
     mGuessX = mCurrentGpsX;
     mGuessY = mCurrentGpsY;
 
-    mCurrentGpsDistance = NavUtils.getDistance(mCurrentGpsX, mCurrentGpsY, 0, 0); // TODO: Update this code to allow for targets other than 0, 0
+    mCurrentGpsDistance = NavUtils.getDistance(mCurrentGpsX, mCurrentGpsY, mTargetX, mTargetY); // DONE: Update this code to allow for targets other than 0, 0
     int lastGpsReadingIndex = mSavedGpsDistances.size() - 1;
     double oldGpsDistance = lastGpsReadingIndex < 0 ? 1000 : mSavedGpsDistances.get(lastGpsReadingIndex);
     if (mCurrentGpsDistance > oldGpsDistance) {
@@ -220,7 +223,7 @@ public class RobotActivity extends AccessoryActivity implements FieldGpsListener
       // Consider reseting the sensor heading using the calculated heading.
       int calculatedGpsTrustThresholdCount = 3;
       if (mMovingStraight && mSavedCalculatedGpsHeadings.size() > calculatedGpsTrustThresholdCount) {
-        boolean resetSensorHeadingToCalculatedGpsHeading = true;
+        boolean resetSensorHeadingToCalculatedGpsHeading = false; // IGNORE GPS calculations for heading, as we are indoors.
         double calculatedGpsTrustThresholdAngle = 15.0;
         double oldCalculatedGpsHeading;
         for (int i = 0; i < calculatedGpsTrustThresholdCount; i++) {

@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Integrated Image Rec</string>
+    <string name="app_name">Final Project</string>
     <string name="action_settings">Settings</string>
     <string-array name="ball_colors">
         <item >None</item>

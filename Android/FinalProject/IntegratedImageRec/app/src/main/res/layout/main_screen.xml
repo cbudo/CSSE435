@@ -207,14 +207,27 @@
         android:layout_alignBaseline="@id/guess_location_label"
         android:layout_toRightOf="@id/state_label"
         android:text="---" />
+    <TextView
+        android:id="@+id/target_location_label"
+        style="@style/DisplayText"
+        android:layout_below="@+id/guess_location_label"
+        android:layout_marginLeft="20dp"
+        android:layout_marginTop="10dp"
+        android:text="Target XY:" />
 
+    <TextView
+        android:id="@+id/target_location_textview"
+        style="@style/DisplayText"
+        android:layout_alignBaseline="@id/target_location_label"
+        android:layout_toRightOf="@id/state_label"
+        android:text="---" />
 
     <TextView
         android:id="@+id/left_right_location_label"
         style="@style/DisplayText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/guess_location_label"
+        android:layout_below="@+id/target_location_label"
         android:layout_marginLeft="20dp"
         android:textSize="16sp"
         android:layout_margin="10dp"
