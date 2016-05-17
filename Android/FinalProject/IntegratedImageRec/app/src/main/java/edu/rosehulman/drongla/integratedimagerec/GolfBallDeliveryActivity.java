@@ -41,6 +41,10 @@ public class GolfBallDeliveryActivity extends ImageRecActivity {
     public static final String TAG = "GolfBallDelivery";
     private ObjectInputStream inputStream;
     private ObjectOutputStream outputStream;
+    private boolean dropped1;
+    private boolean dropped2;
+    private boolean dropped3;
+    private int TURN_GAIN = 50;
 
     /**
      * An enum used for calibration
@@ -69,7 +73,7 @@ public class GolfBallDeliveryActivity extends ImageRecActivity {
 
     public enum State {
         READY_FOR_MISSION,
-        NEAR_BALL_SCRIPT,
+        DRIVE_TOWARDS_NEAR_BALL,
         NEAR_IMAGE_REC,
         DROP_NEAR,
         CHECK_DROPPED_NEAR,
@@ -279,6 +283,10 @@ public class GolfBallDeliveryActivity extends ImageRecActivity {
         m_text_debug_2 = (TextView) findViewById(R.id.textview_ball2);
         m_text_debug_3 = (TextView) findViewById(R.id.textview_ball3);
 
+        dropped1 = false;
+        dropped2 = false;
+        dropped3 = false;
+
         cal_state = CalibrationStatus.NOT_CALIBRATED;
         calibrateButton = (Button) findViewById(R.id.calibrateButton);
         loadCalibration = (Button) findViewById(R.id.loadCalibration);
@@ -344,7 +352,7 @@ public class GolfBallDeliveryActivity extends ImageRecActivity {
                 //exit state, lost cone
                 Toast.makeText(GolfBallDeliveryActivity.this, "Cone = Lost", Toast.LENGTH_SHORT).show();
             }
-            int amount = (int) Math.round((mConeLeftRightLocation * 10) * 50);
+            int amount = (int) Math.round((mConeLeftRightLocation * 10) * TURN_GAIN);
             if (mConeLeftRightLocation < 0) {
                 Log.d(TAG, "Turn left some amount");
                 sendWheelSpeed(100 + amount, 100 - amount);
@@ -364,7 +372,7 @@ public class GolfBallDeliveryActivity extends ImageRecActivity {
         } else {
             if (mConeFound) {
                 // set ir Near, Far, Home
-                if (mState == State.NEAR_BALL_SCRIPT)
+                if (mState == State.DRIVE_TOWARDS_NEAR_BALL)
                     setState(State.NEAR_IMAGE_REC);
                 else if (mState == State.DRIVE_TOWARDS_FAR_BALL)
                     setState(State.FAR_IMAGE_REC);
@@ -375,7 +383,7 @@ public class GolfBallDeliveryActivity extends ImageRecActivity {
         switch (mState) {
             case READY_FOR_MISSION:
                 break;
-            case NEAR_BALL_SCRIPT:
+            case DRIVE_TOWARDS_NEAR_BALL:
                 break;
             case NEAR_IMAGE_REC:
                 break;
@@ -392,6 +400,28 @@ public class GolfBallDeliveryActivity extends ImageRecActivity {
                 }
                 break;
             case CHECK_DROPPED_NEAR:
+                switch (mNearBallLocation) {
+                    case 1:
+                        if (!dropped1)
+                            setState(State.DROP_NEAR);
+                        else
+                            setState(State.DRIVE_TOWARDS_FAR_BALL);
+                        break;
+                    case 2:
+                        if (!dropped2)
+                            setState(State.DROP_NEAR);
+                        else
+                            setState(State.DRIVE_TOWARDS_FAR_BALL);
+                        break;
+                    case 3:
+                        if (!dropped3)
+                            setState(State.DROP_NEAR);
+                        else
+                            setState(State.DRIVE_TOWARDS_FAR_BALL);
+                        break;
+                    default:
+                        setState(State.DRIVE_TOWARDS_FAR_BALL);
+                }
                 break;
             case DRIVE_TOWARDS_FAR_BALL:
                 seekTargetAt(FAR_BALL_GPS_X, mFarBallGpsY);
@@ -411,6 +441,28 @@ public class GolfBallDeliveryActivity extends ImageRecActivity {
                 }
                 break;
             case CHECK_DROPPED_FAR:
+                switch (mFarBallLocation) {
+                    case 1:
+                        if (!dropped1)
+                            setState(State.DROP_FAR);
+                        else
+                            setState(State.DROP_WHITE);
+                        break;
+                    case 2:
+                        if (!dropped2)
+                            setState(State.DROP_FAR);
+                        else
+                            setState(State.DROP_WHITE);
+                        break;
+                    case 3:
+                        if (!dropped3)
+                            setState(State.DROP_FAR);
+                        else
+                            setState(State.DROP_WHITE);
+                        break;
+                    default:
+                        setState(State.DROP_WHITE);
+                }
                 break;
             case DROP_WHITE:
                 if (!mRunningScript) {
@@ -449,6 +501,7 @@ public class GolfBallDeliveryActivity extends ImageRecActivity {
                 }
                 break;
             case DRIVE_TOWARDS_HOME:
+                // check if in "IR BOX"
                 seekTargetAt(0, 0);
                 break;
             case WAITING_FOR_PICKUP:
@@ -457,6 +510,7 @@ public class GolfBallDeliveryActivity extends ImageRecActivity {
                 }
                 break;
             case SEEKING_HOME:
+                // check if in "IR BOX"
                 seekTargetAt(0, 0);
                 if (getStateTimeMs() > 8000) {
                     setState(State.WAITING_FOR_PICKUP);
@@ -616,8 +670,10 @@ public class GolfBallDeliveryActivity extends ImageRecActivity {
         read_1 = false;
         read_2 = false;
         read_3 = false;
-
         if (cal_state == CalibrationStatus.CALIBRATED) {
+            dropped1 = false;
+            dropped2 = false;
+            dropped3 = false;
             sendCommand("ATTACH 111111");
             sendCommand(getString(R.string.gripper_command, 50));
 
@@ -861,7 +917,7 @@ public class GolfBallDeliveryActivity extends ImageRecActivity {
             mGoOrMissionCompleteButton.setText("Mission Complete!");
             mJumbotron_button.setBackgroundResource(R.drawable.red_button);
             mJumbotron_button.setText("STOP");
-            setState(State.NEAR_BALL_SCRIPT);
+            setState(State.DRIVE_TOWARDS_NEAR_BALL);
         } else {
             setState(State.READY_FOR_MISSION);
 
@@ -884,7 +940,7 @@ public class GolfBallDeliveryActivity extends ImageRecActivity {
     public void setState(State newState) {
         mStateStartTime = System.currentTimeMillis();
         // Make sure when the match ends that no scheduled timer events from scripts change the FSM.
-        if (mState == State.READY_FOR_MISSION && newState != State.NEAR_BALL_SCRIPT) {
+        if (mState == State.READY_FOR_MISSION && newState != State.DRIVE_TOWARDS_NEAR_BALL) {
             Toast.makeText(this, "Illegal state transition out of READY_FOR_MISSION", Toast.LENGTH_SHORT).show();
             return;
         }
@@ -898,7 +954,7 @@ public class GolfBallDeliveryActivity extends ImageRecActivity {
                 mJumbotron_button.setText("Go!");
                 sendWheelSpeed(0, 0);
                 break;
-            case NEAR_BALL_SCRIPT:
+            case DRIVE_TOWARDS_NEAR_BALL:
                 mGpsInfoTextView.setText("---"); // Clear GPS display (optional)
                 mGuessXYTextView.setText("---"); // Clear guess display (optional)
                 mScripts.nearBallScript();
@@ -1149,6 +1205,17 @@ public class GolfBallDeliveryActivity extends ImageRecActivity {
         } else {
             // Debug toast. 
             //Toast.makeText(GolfBallDeliveryActivity.this, "Ball Dropped off", Toast.LENGTH_SHORT).show();
+            switch (index) {
+                case 1:
+                    dropped1 = true;
+                    break;
+                case 2:
+                    dropped2 = true;
+                    break;
+                case 3:
+                    dropped3 = true;
+                    break;
+            }
         }
 
         switch (index) {

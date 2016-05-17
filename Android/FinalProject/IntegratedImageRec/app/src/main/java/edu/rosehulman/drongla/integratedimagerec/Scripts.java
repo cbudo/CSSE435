@@ -67,7 +67,7 @@ public class Scripts {
         mCommandHandler.postDelayed(new Runnable() {
             @Override
             public void run() {
-                if (mGolfBallDeliveryActivity.mState == GolfBallDeliveryActivity.State.NEAR_BALL_SCRIPT) {
+                if (mGolfBallDeliveryActivity.mState == GolfBallDeliveryActivity.State.DRIVE_TOWARDS_NEAR_BALL) {
                     mGolfBallDeliveryActivity.setState(GolfBallDeliveryActivity.State.DRIVE_TOWARDS_FAR_BALL);
                 }
             }
@@ -201,7 +201,7 @@ public class Scripts {
             @Override
             public void run() {
                 mGolfBallDeliveryActivity.sendCommand(mGolfBallDeliveryActivity.getString(R.string.position_command, -20, 82, 80, -67, 157));
-                mGolfBallDeliveryActivity.sendCommand("CUSTOM Q1");
+                mGolfBallDeliveryActivity.sendCommand("CUSTOM Q3");
             }
         }, 3000);
     }
