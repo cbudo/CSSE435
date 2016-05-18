@@ -56,7 +56,7 @@ public class GolfBallDeliveryActivity extends ImageRecActivity {
      */
     private ObjectInputStream inputStream;
     private ObjectOutputStream outputStream;
-
+    private double mLastConeSize;
 
 
     private enum CalibrationStatus {
@@ -401,8 +401,18 @@ public class GolfBallDeliveryActivity extends ImageRecActivity {
         if (mState == State.FAR_IMAGE_REC || mState == State.NEAR_IMAGE_REC || mState == State.HOME_IMAGE_REC) {
             if (!mConeFound) {
                 //exit state, lost cone
-                Toast.makeText(GolfBallDeliveryActivity.this, "Cone = Lost", Toast.LENGTH_SHORT).show();
+                //Toast.makeText(GolfBallDeliveryActivity.this, "Cone = Lost", Toast.LENGTH_SHORT).show();
                 logToDebugWindow(mTAG, "Lost cone");
+                if (mLastConeSize > 0.05){
+                    logToDebugWindow(mTAG, "Exiting Image Rec - lost cone when near");
+                    //Drop it early instead of circling
+                    if (mState == State.NEAR_IMAGE_REC)
+                        setState(State.DROP_NEAR);
+                    else if (mState == State.FAR_IMAGE_REC)
+                        setState(State.DROP_FAR);
+                    else if (mState == State.HOME_IMAGE_REC)
+                        setState(State.WAITING_FOR_PICKUP);
+                }
             }
             int amount = (int) Math.round(((mConeLeftRightLocation * 10) * TURN_GAIN));
             if (mConeLeftRightLocation < 0) {
@@ -421,8 +431,9 @@ public class GolfBallDeliveryActivity extends ImageRecActivity {
                 else if (mState == State.HOME_IMAGE_REC)
                     setState(State.WAITING_FOR_PICKUP);
             }
+            mLastConeSize = mConeSize;
         } else {
-            if (mConeFound) {
+            if (mConeFound && inIRRegion()) {
                 // set ir Near, Far, Home
                 if (mState == State.DRIVE_TOWARDS_NEAR_BALL)
                     setState(State.NEAR_IMAGE_REC);
@@ -612,15 +623,18 @@ public class GolfBallDeliveryActivity extends ImageRecActivity {
 
     private boolean inIRRegion() {
 //        NavUtils.getDistance()
-        switch (mState) {
-            case NEAR_IMAGE_REC:
-                return true;
-            case FAR_IMAGE_REC:
-                return true;
-            case HOME_IMAGE_REC:
-                return true;
-            default:
-                break;
+        if (mCurrentGpsDistance < 50) {
+            switch (mState) {
+                case NEAR_IMAGE_REC:
+
+                    return true;
+                case FAR_IMAGE_REC:
+                    return true;
+                case HOME_IMAGE_REC:
+                    return true;
+                default:
+                    break;
+            }
         }
         return false;
     }
