@@ -56,6 +56,13 @@ volatile int mainEventFlags = 0;
 RobotAsciiCom robotAsciiCom;
 WildThumperCom wildThumperCom(TEAM_NUMBER);
 
+void teamNumberReplyFromThumper(byte teamNumber) {
+  // Display the team number on the LCD.
+  sprintf(txBuf,"Team Number %d");
+  
+  acc.write(txBuf, 13);
+}
+
 void setup(){
   Serial.begin(9600);
   pinMode(PIN_LEFT_BUTTON, INPUT_PULLUP);
@@ -73,16 +80,17 @@ void setup(){
   robotAsciiCom.registerBatteryVoltageRequestCallback(batteryVoltageRequestFromAndroid);
   robotAsciiCom.registerWheelCurrentRequestCallback(wheelCurrentRequestFromAndroid);
   robotAsciiCom.registerCustomStringCallback(customStringCallbackFromAndroid);
-  wildThumperCom.sendTeamNumberChangeRequest(14);
     // Register callbacks for commands you might receive from the Wild Thumper.
   wildThumperCom.registerBatteryVoltageReplyCallback(batteryVoltageReplyFromThumper);
   wildThumperCom.registerWheelCurrentReplyCallback(wheelCurrentReplyFromThumper);
+  wildThumperCom.registerTeamNumberReplyCallback(teamNumberReplyFromThumper);
 
 //  lcd.begin(16, 2);
 //  lcd.clear();
 //  lcd.print("Final Project!");
   delay(1450);
   acc.powerOn();
+  wildThumperCom.sendTeamNumberChangeRequest(14);
 }
 
 void wheelSpeedMessageFromAndroid(byte leftMode, byte rightMode, byte leftDutyCycle, byte rightDutyCycle) {
@@ -254,6 +262,7 @@ void wheelCurrentReplyFromThumper(int leftWheelMotorsMilliamps, int rightWheelMo
 
 
 void loop() {
+//  wildThumperCom.sendTeamNumberRequest();
   // See if there is a new message from Android.
   if (acc.isConnected()) {
     int len = acc.read(rxBuf, sizeof(rxBuf), 1);

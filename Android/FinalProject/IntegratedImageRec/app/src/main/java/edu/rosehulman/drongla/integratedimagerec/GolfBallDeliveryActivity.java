@@ -415,12 +415,11 @@ public class GolfBallDeliveryActivity extends ImageRecActivity {
                 }
             }
             int amount = (int) Math.round(((mConeLeftRightLocation * 10) * TURN_GAIN));
+            sendWheelSpeed(100 + amount, 100 - amount);
             if (mConeLeftRightLocation < 0) {
                 logToDebugWindow(mTAG, "Turn left some amount("+amount+")");
-                sendWheelSpeed(100 - amount, 100 + amount);
             } else if (mConeLeftRightLocation > 0) {
                 logToDebugWindow(mTAG, "Turn right some amount("+amount+")");
-                sendWheelSpeed(100 - amount, 100 + amount);
             }
             if (mConeSize > 0.1) {
                 logToDebugWindow(mTAG, "May want to stop - the cone is pretty big");
@@ -685,8 +684,8 @@ public class GolfBallDeliveryActivity extends ImageRecActivity {
      * Send the wheel speeds to the robot and updates the TextViews.
      */
     @Override
-    public void sendWheelSpeed(int rightDutyCycle, int leftDutyCycle) {
-        super.sendWheelSpeed(-leftDutyCycle, -rightDutyCycle); // Send the values to the
+    public void sendWheelSpeed(int leftDutyCycle, int rightDutyCycle) {
+        super.sendWheelSpeed(leftDutyCycle, rightDutyCycle); // Send the values to the
         mLeftDutyCycleTextView.setText("Left\n" + (-leftDutyCycle));
         mRightDutyCycleTextView.setText("Right\n" + (-rightDutyCycle));
     }
