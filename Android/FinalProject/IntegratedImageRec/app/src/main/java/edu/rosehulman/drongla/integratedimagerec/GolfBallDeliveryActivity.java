@@ -48,7 +48,7 @@ public class GolfBallDeliveryActivity extends ImageRecActivity {
     private boolean dropped1;
     private boolean dropped2;
     private boolean dropped3;
-    private int TURN_GAIN = 25;
+    private int TURN_GAIN = 1;
 
     //**************** Calibration ****************
     /*
@@ -403,13 +403,13 @@ public class GolfBallDeliveryActivity extends ImageRecActivity {
                 Toast.makeText(GolfBallDeliveryActivity.this, "Cone = Lost", Toast.LENGTH_SHORT).show();
                 logToDebugWindow(mTAG, "Lost cone");
             }
-            int amount = (int) Math.round((mConeLeftRightLocation * 10) * TURN_GAIN);
+            int amount = (int) Math.round(((mConeLeftRightLocation * 10) * TURN_GAIN) * (1/mConeSize));
             if (mConeLeftRightLocation < 0) {
                 logToDebugWindow(mTAG, "Turn left some amount("+amount+")");
-                sendWheelSpeed(100 - amount, 100 + amount);
+                sendWheelSpeed(75 + amount, 75 - amount);
             } else if (mConeLeftRightLocation > 0) {
                 logToDebugWindow(mTAG, "Turn right some amount("+amount+")");
-                sendWheelSpeed(100 + amount, 100 - amount);
+                sendWheelSpeed(75 - amount, 75 + amount);
             }
             if (mConeSize > 0.1) {
                 logToDebugWindow(mTAG, "May want to stop - the cone is pretty big");
@@ -435,6 +435,7 @@ public class GolfBallDeliveryActivity extends ImageRecActivity {
             case READY_FOR_MISSION:
                 break;
             case DRIVE_TOWARDS_NEAR_BALL:
+                seekTargetAt(NEAR_BALL_GPS_X, mNearBallGpsY);
                 break;
             case NEAR_IMAGE_REC:
                 break;
@@ -546,7 +547,6 @@ public class GolfBallDeliveryActivity extends ImageRecActivity {
                     mCommandHandler.postDelayed(new Runnable() {
                         @Override
                         public void run() {
-                            mWhiteBallLocation = -1;
                             mRunningScript = false;
                             setState(State.CHECK_DROPPED_WHITE);
                         }
@@ -671,9 +671,9 @@ public class GolfBallDeliveryActivity extends ImageRecActivity {
      */
     @Override
     public void sendWheelSpeed(int leftDutyCycle, int rightDutyCycle) {
-        super.sendWheelSpeed(leftDutyCycle, rightDutyCycle); // Send the values to the
-        mLeftDutyCycleTextView.setText("Left\n" + leftDutyCycle);
-        mRightDutyCycleTextView.setText("Right\n" + rightDutyCycle);
+        super.sendWheelSpeed(-leftDutyCycle, -rightDutyCycle); // Send the values to the
+        mLeftDutyCycleTextView.setText("Left\n" + (-leftDutyCycle));
+        mRightDutyCycleTextView.setText("Right\n" + (-rightDutyCycle));
     }
     // --------------------------- Sensor listeners ---------------------------
 
