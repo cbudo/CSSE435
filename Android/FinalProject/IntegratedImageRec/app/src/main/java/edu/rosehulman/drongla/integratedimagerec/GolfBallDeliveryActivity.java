@@ -48,7 +48,7 @@ public class GolfBallDeliveryActivity extends ImageRecActivity {
     private boolean dropped1;
     private boolean dropped2;
     private boolean dropped3;
-    private int TURN_GAIN = 1;
+    private int TURN_GAIN = 20;
 
     //**************** Calibration ****************
     /*
@@ -404,13 +404,13 @@ public class GolfBallDeliveryActivity extends ImageRecActivity {
                 Toast.makeText(GolfBallDeliveryActivity.this, "Cone = Lost", Toast.LENGTH_SHORT).show();
                 logToDebugWindow(mTAG, "Lost cone");
             }
-            int amount = (int) Math.round(((mConeLeftRightLocation * 10) * TURN_GAIN) * (1/mConeSize));
+            int amount = (int) Math.round(((mConeLeftRightLocation * 10) * TURN_GAIN));
             if (mConeLeftRightLocation < 0) {
                 logToDebugWindow(mTAG, "Turn left some amount("+amount+")");
-                sendWheelSpeed(75 + amount, 75 - amount);
+                sendWheelSpeed(100 + amount, 100 - amount);
             } else if (mConeLeftRightLocation > 0) {
                 logToDebugWindow(mTAG, "Turn right some amount("+amount+")");
-                sendWheelSpeed(75 - amount, 75 + amount);
+                sendWheelSpeed(100 + amount, 100 - amount);
             }
             if (mConeSize > 0.1) {
                 logToDebugWindow(mTAG, "May want to stop - the cone is pretty big");
