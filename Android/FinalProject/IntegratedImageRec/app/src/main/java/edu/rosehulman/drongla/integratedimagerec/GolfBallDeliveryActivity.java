@@ -48,7 +48,7 @@ public class GolfBallDeliveryActivity extends ImageRecActivity {
     private boolean dropped1;
     private boolean dropped2;
     private boolean dropped3;
-    private int TURN_GAIN = 20;
+    private int TURN_GAIN = 10;
 
     //**************** Calibration ****************
     /*
@@ -1414,7 +1414,7 @@ public class GolfBallDeliveryActivity extends ImageRecActivity {
         String currentDateandTime = sdf.format(new Date());
         if (mHasDebugTextview) {
             // Clears the window down to 50 lines if you have more than 100
-            int index = indexOfLastLineX(mDebugLogger.getText().toString(), 100);
+            int index = indexOfLastLineX(mDebugLogger.getText().toString(), 1000);
             if (index > 0){
                 String t = mDebugLogger.getText().toString().substring(index);
                 mDebugLogger.setText("");

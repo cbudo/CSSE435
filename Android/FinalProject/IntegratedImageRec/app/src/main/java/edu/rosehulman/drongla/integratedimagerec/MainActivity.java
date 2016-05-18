@@ -28,25 +28,13 @@ public class MainActivity extends GolfBallDeliveryActivity {
             public void run() {
                 mViewFlipper.setDisplayedChild(1);
             }
-        }, 100);
+        }, 500);
         mViewFlipper.postDelayed(new Runnable() {
             @Override
             public void run() {
-                mViewFlipper.setDisplayedChild(2);
+                mViewFlipper.setDisplayedChild(0);
             }
-        }, 200);
-        mViewFlipper.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                mViewFlipper.setDisplayedChild(3);
-            }
-        }, 300);
-        mViewFlipper.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                mViewFlipper.setDisplayedChild(4);
-            }
-        }, 400);
+        }, 1500);
     }
 
     @Override
