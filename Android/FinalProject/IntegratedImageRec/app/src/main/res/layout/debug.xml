@@ -255,14 +255,16 @@
         <LinearLayout
             android:orientation="vertical"
             android:layout_width="fill_parent"
-            android:layout_height="fill_parent">
+            android:layout_height="fill_parent"
+            >
 
             <ScrollView
                 android:id="@+id/SCROLLING_DEBUG_VIEW"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:scrollbars="vertical"
-                android:fillViewport="true">
+                android:fillViewport="true"
+                android:background="@color/colorLightGrey">
 
                 <TextView
                     android:id="@+id/SCROLLING_DEBUG_LOGGGER"
