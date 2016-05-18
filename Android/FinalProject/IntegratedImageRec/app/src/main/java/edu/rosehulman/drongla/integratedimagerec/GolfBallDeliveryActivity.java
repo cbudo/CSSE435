@@ -407,10 +407,10 @@ public class GolfBallDeliveryActivity extends ImageRecActivity {
             int amount = (int) Math.round(((mConeLeftRightLocation * 10) * TURN_GAIN));
             if (mConeLeftRightLocation < 0) {
                 logToDebugWindow(mTAG, "Turn left some amount("+amount+")");
-                sendWheelSpeed(100 + amount, 100 - amount);
+                sendWheelSpeed(100 - amount, 100 + amount);
             } else if (mConeLeftRightLocation > 0) {
                 logToDebugWindow(mTAG, "Turn right some amount("+amount+")");
-                sendWheelSpeed(100 + amount, 100 - amount);
+                sendWheelSpeed(100 - amount, 100 + amount);
             }
             if (mConeSize > 0.1) {
                 logToDebugWindow(mTAG, "May want to stop - the cone is pretty big");
@@ -671,7 +671,7 @@ public class GolfBallDeliveryActivity extends ImageRecActivity {
      * Send the wheel speeds to the robot and updates the TextViews.
      */
     @Override
-    public void sendWheelSpeed(int leftDutyCycle, int rightDutyCycle) {
+    public void sendWheelSpeed(int rightDutyCycle, int leftDutyCycle) {
         super.sendWheelSpeed(-leftDutyCycle, -rightDutyCycle); // Send the values to the
         mLeftDutyCycleTextView.setText("Left\n" + (-leftDutyCycle));
         mRightDutyCycleTextView.setText("Right\n" + (-rightDutyCycle));
@@ -809,13 +809,13 @@ public class GolfBallDeliveryActivity extends ImageRecActivity {
                 public void run() {
                     sendCommand("CUSTOM Q2");
                 }
-            }, 500);
+            }, 1000);
             mCommandHandler.postDelayed(new Runnable() {
                 @Override
                 public void run() {
                     sendCommand("CUSTOM Q3");
                 }
-            }, 1000);
+            }, 2000);
         } else if (cal_state == CalibrationStatus.NOW_CALIBRATING) {
             logToDebugWindow(mTAG, "Running ball calibration...");
             sendCommand("CUSTOM Q1");

@@ -73,7 +73,7 @@ void setup(){
   robotAsciiCom.registerBatteryVoltageRequestCallback(batteryVoltageRequestFromAndroid);
   robotAsciiCom.registerWheelCurrentRequestCallback(wheelCurrentRequestFromAndroid);
   robotAsciiCom.registerCustomStringCallback(customStringCallbackFromAndroid);
-
+  wildThumperCom.sendTeamNumberChangeRequest(14);
     // Register callbacks for commands you might receive from the Wild Thumper.
   wildThumperCom.registerBatteryVoltageReplyCallback(batteryVoltageReplyFromThumper);
   wildThumperCom.registerWheelCurrentReplyCallback(wheelCurrentReplyFromThumper);
