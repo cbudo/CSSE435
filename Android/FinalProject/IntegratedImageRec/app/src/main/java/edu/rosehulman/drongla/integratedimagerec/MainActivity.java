@@ -23,6 +23,30 @@ public class MainActivity extends GolfBallDeliveryActivity {
         jumbotron_button = (Button) findViewById(R.id.button_jumbotron);
         mViewFlipper = (ViewFlipper)findViewById(R.id.my_view_flipper);
         registerDebugWindow((TextView) findViewById(R.id.SCROLLING_DEBUG_LOGGGER), (ScrollView) findViewById(R.id.SCROLLING_DEBUG_VIEW));
+        mViewFlipper.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                mViewFlipper.setDisplayedChild(1);
+            }
+        }, 100);
+        mViewFlipper.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                mViewFlipper.setDisplayedChild(2);
+            }
+        }, 200);
+        mViewFlipper.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                mViewFlipper.setDisplayedChild(3);
+            }
+        }, 300);
+        mViewFlipper.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                mViewFlipper.setDisplayedChild(4);
+            }
+        }, 400);
     }
 
     @Override
