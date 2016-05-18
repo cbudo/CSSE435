@@ -402,7 +402,7 @@ public class GolfBallDeliveryActivity extends ImageRecActivity {
             if (!mConeFound) {
                 //exit state, lost cone
                 //Toast.makeText(GolfBallDeliveryActivity.this, "Cone = Lost", Toast.LENGTH_SHORT).show();
-                logToDebugWindow(mTAG, "Lost cone");
+                //logToDebugWindow(mTAG, "Lost cone");
                 if (mLastConeSize > 0.05){
                     logToDebugWindow(mTAG, "Exiting Image Rec - lost cone when near");
                     //Drop it early instead of circling
@@ -415,13 +415,13 @@ public class GolfBallDeliveryActivity extends ImageRecActivity {
                 }
             }
             int amount = (int) Math.round(((mConeLeftRightLocation * 10) * TURN_GAIN));
-            sendWheelSpeed(100 + amount, 100 - amount);
+            sendWheelSpeed(125 + amount, 125 - amount);
             if (mConeLeftRightLocation < 0) {
-                logToDebugWindow(mTAG, "Turn left some amount("+amount+")");
+                //logToDebugWindow(mTAG, "Turn left some amount("+amount+")");
             } else if (mConeLeftRightLocation > 0) {
-                logToDebugWindow(mTAG, "Turn right some amount("+amount+")");
+                //logToDebugWindow(mTAG, "Turn right some amount("+amount+")");
             }
-            if (mConeSize > 0.1) {
+            if (mConeSize > 0.075) {
                 logToDebugWindow(mTAG, "May want to stop - the cone is pretty big");
                 if (mState == State.NEAR_IMAGE_REC)
                     setState(State.DROP_NEAR);
@@ -622,19 +622,35 @@ public class GolfBallDeliveryActivity extends ImageRecActivity {
 
     private boolean inIRRegion() {
 //        NavUtils.getDistance()
-        if (mCurrentGpsDistance < 50) {
-            switch (mState) {
-                case NEAR_IMAGE_REC:
+        double distanceFromTarget = 9001;
+        switch (mState) {
+            case DRIVE_TOWARDS_NEAR_BALL:
+                 distanceFromTarget = NavUtils.getDistance(mCurrentGpsX, mCurrentGpsY,
+                        NEAR_BALL_GPS_X, mNearBallGpsY);
+                logToDebugWindow(mTAG,distanceFromTarget + " from target");
+                if (distanceFromTarget < 50) {
+                    return true;
+                }
+            case DRIVE_TOWARDS_FAR_BALL:
+                 distanceFromTarget = NavUtils.getDistance(mCurrentGpsX, mCurrentGpsY,
+                        FAR_BALL_GPS_X, mFarBallGpsY);
+                logToDebugWindow(mTAG,distanceFromTarget + " from target");
 
+                if (distanceFromTarget < 50) {
                     return true;
-                case FAR_IMAGE_REC:
+                }
+            case DRIVE_TOWARDS_HOME:
+                 distanceFromTarget = NavUtils.getDistance(mCurrentGpsX, mCurrentGpsY,
+                        0, 0);
+                logToDebugWindow(mTAG,distanceFromTarget + " from target");
+
+                if (distanceFromTarget < 50) {
                     return true;
-                case HOME_IMAGE_REC:
-                    return true;
-                default:
-                    break;
-            }
+                }
+            default:
+                break;
         }
+
         return false;
     }
 
@@ -657,7 +673,7 @@ public class GolfBallDeliveryActivity extends ImageRecActivity {
      * @param y GPS Y value of the target.
      */
     private void seekTargetAt(double x, double y) {
-        logToDebugWindow(mTAG, "Seeking target at (" + (int) mTargetX + ", " + (int) mTargetY + ")");
+        //logToDebugWindow(mTAG, "Seeking target at (" + (int) mTargetX + ", " + (int) mTargetY + ")");
         mTargetX = x;
         mTargetY = y;
         //target_location_textview
@@ -686,8 +702,8 @@ public class GolfBallDeliveryActivity extends ImageRecActivity {
     @Override
     public void sendWheelSpeed(int leftDutyCycle, int rightDutyCycle) {
         super.sendWheelSpeed(leftDutyCycle, rightDutyCycle); // Send the values to the
-        mLeftDutyCycleTextView.setText("Left\n" + (-leftDutyCycle));
-        mRightDutyCycleTextView.setText("Right\n" + (-rightDutyCycle));
+        mLeftDutyCycleTextView.setText("Left\n" + (leftDutyCycle));
+        mRightDutyCycleTextView.setText("Right\n" + (rightDutyCycle));
     }
     // --------------------------- Sensor listeners ---------------------------
 
@@ -697,6 +713,7 @@ public class GolfBallDeliveryActivity extends ImageRecActivity {
     @Override
     public void onLocationChanged(double x, double y, double heading, Location location) {
         super.onLocationChanged(x, y, heading, location);
+
         String gpsInfo = getString(R.string.xy_format, x, y);
         if (heading <= 180.0 && heading > -180.0) {
             gpsInfo += " " + getString(R.string.degrees_format, heading);
@@ -708,15 +725,16 @@ public class GolfBallDeliveryActivity extends ImageRecActivity {
         gpsInfo += "    " + mGpsCounter;
         mGpsInfoTextView.setText(gpsInfo);
         if (mState == State.DRIVE_TOWARDS_FAR_BALL) {
-            double distanceFromTarget = NavUtils.getDistance(mCurrentGpsX, mCurrentGpsY,
-                    FAR_BALL_GPS_X, mFarBallGpsY);
-            if (distanceFromTarget < ACCEPTED_DISTANCE_AWAY_FT) {
-                setState(State.FAR_IMAGE_REC);
-            }
+//            double distanceFromTarget = NavUtils.getDistance(mCurrentGpsX, mCurrentGpsY,
+//                    FAR_BALL_GPS_X, mFarBallGpsY);
+//            if (distanceFromTarget < ACCEPTED_DISTANCE_AWAY_FT) {
+//                setState(State.FAR_IMAGE_REC);
+//            }
         }
         if (mState == State.DRIVE_TOWARDS_HOME) {
-            // Shorter to write since the RobotActivity already calculates the distance to 0, 0.
-            if (mCurrentGpsDistance < ACCEPTED_DISTANCE_AWAY_FT) {
+            double distanceFromTarget = NavUtils.getDistance(mCurrentGpsX, mCurrentGpsY,
+                    0, 0);
+            if (distanceFromTarget < ACCEPTED_DISTANCE_AWAY_FT) {
                 setState(State.WAITING_FOR_PICKUP);
             }
         }
