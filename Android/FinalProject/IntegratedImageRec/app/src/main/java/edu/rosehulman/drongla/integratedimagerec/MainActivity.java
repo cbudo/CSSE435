@@ -48,6 +48,7 @@ public class MainActivity extends GolfBallDeliveryActivity {
             mViewFlipper.showPrevious();
             return true;
         }
+        scrollToBottom();
         return super.onOptionsItemSelected(item);
     }
 

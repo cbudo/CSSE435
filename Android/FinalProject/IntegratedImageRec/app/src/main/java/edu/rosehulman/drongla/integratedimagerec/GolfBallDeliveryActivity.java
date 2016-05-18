@@ -43,7 +43,7 @@ public class GolfBallDeliveryActivity extends ImageRecActivity {
     private TextView mDebugLogger;
     private ScrollView mDebugScroller;
     private boolean mHasDebugTextview = false;
-
+    private boolean mFirstRun = true;
 
     private boolean dropped1;
     private boolean dropped2;
@@ -56,6 +56,7 @@ public class GolfBallDeliveryActivity extends ImageRecActivity {
      */
     private ObjectInputStream inputStream;
     private ObjectOutputStream outputStream;
+
 
 
     private enum CalibrationStatus {
@@ -1016,7 +1017,9 @@ public class GolfBallDeliveryActivity extends ImageRecActivity {
             mJumbotron_button.setBackgroundResource(R.drawable.red_button);
             mJumbotron_button.setText("STOP");
             setState(State.DRIVE_TOWARDS_NEAR_BALL);
+            clearDebugWindow();
             logToDebugWindow(mTAG, "GO: Per HandleGoOrMissionComplete");
+
         } else {
             setState(State.READY_FOR_MISSION);
             logToDebugWindow(mTAG, "Ready for misssion: Per HandleGoOrMissionComplete");
@@ -1395,7 +1398,7 @@ public class GolfBallDeliveryActivity extends ImageRecActivity {
         tv.setText("Opened Logger \n");
         mHasDebugTextview = true;
     }
-    private void scrollToBottom()
+    public void scrollToBottom()
     {
         if (mHasDebugTextview) {
             mDebugScroller.post(new Runnable() {
@@ -1413,13 +1416,21 @@ public class GolfBallDeliveryActivity extends ImageRecActivity {
             // Clears the window down to 50 lines if you have more than 100
             int index = indexOfLastLineX(mDebugLogger.getText().toString(), 100);
             if (index > 0){
-                mDebugLogger.setText(mDebugLogger.getText().toString().substring(index));
+                String t = mDebugLogger.getText().toString().substring(index);
+                mDebugLogger.setText("");
+                mDebugLogger.setText(t);
             }
             // End clears
             mDebugLogger.append(currentDateandTime + "|" +mTAG +">"+message + '\n');
             scrollToBottom();
         }
         Log.d(mTAG, message);
+    }
+    public void clearDebugWindow(){
+        if ((mHasDebugTextview) && (!mFirstRun)){
+            mFirstRun = false;
+            mDebugLogger.setText("");
+        }
     }
     /*
     For a window with X lines, returns the char index at line X/2. Useful for only occasionally clearing a debug window
@@ -1431,18 +1442,10 @@ public class GolfBallDeliveryActivity extends ImageRecActivity {
         }
         int lines = 1;
         int pos = 0;
-        int halfpos = 0;
-        boolean other = false;
         while ((pos = str.lastIndexOf("\n", pos) + 1) != 0) {
             lines++;
-            if (other){
-                other = false;
-                halfpos ++;
-            } else {
-                other = true;
-            }
             if (lines > (X)){
-                return halfpos;
+                return pos / 2;
             }
         }
         return 0;
