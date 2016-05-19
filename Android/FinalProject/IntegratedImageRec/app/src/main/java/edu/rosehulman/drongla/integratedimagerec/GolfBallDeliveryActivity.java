@@ -426,6 +426,7 @@ public class GolfBallDeliveryActivity extends ImageRecActivity {
                 //logToDebugWindow(mTAG, "Turn right some amount("+amount+")");
             }
             if (mConeSize > 0.075) {
+                //Why did I change this back? Rationale: if we lose the cone and we are have 0.065, we are dropping now. so we can try hard to hit the cone. 
                 logToDebugWindow(mTAG, "May want to stop - the cone is pretty big");
                 if (mState == State.NEAR_IMAGE_REC)
                     setState(State.DROP_NEAR);
