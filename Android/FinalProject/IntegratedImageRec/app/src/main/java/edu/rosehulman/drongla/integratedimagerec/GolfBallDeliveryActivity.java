@@ -57,6 +57,7 @@ public class GolfBallDeliveryActivity extends ImageRecActivity {
     private ObjectInputStream inputStream;
     private ObjectOutputStream outputStream;
     private double mLastConeSize;
+    private boolean mEnteredHomeIR;
 
 
     private enum CalibrationStatus {
@@ -336,6 +337,7 @@ public class GolfBallDeliveryActivity extends ImageRecActivity {
         mNearBallLocation = 0;
         mFarBallLocation = 0;
         mWhiteBallLocation = 0;
+        mEnteredHomeIR = false;
 
         cal_state = CalibrationStatus.NOT_CALIBRATED;
         calibrateButton = (Button) findViewById(R.id.calibrateButton);
@@ -415,7 +417,7 @@ public class GolfBallDeliveryActivity extends ImageRecActivity {
                 }
             }
             int amount = (int) Math.round(((mConeLeftRightLocation * 10) * TURN_GAIN));
-            sendWheelSpeed(125 + amount, 125 - amount);
+            sendWheelSpeed(125 - amount, 125 + amount);
             if (mConeLeftRightLocation < 0) {
                 //logToDebugWindow(mTAG, "Turn left some amount("+amount+")");
             } else if (mConeLeftRightLocation > 0) {
@@ -608,7 +610,7 @@ public class GolfBallDeliveryActivity extends ImageRecActivity {
             case SEEKING_HOME:
                 // check if in "IR BOX"
                 seekTargetAt(0, 0);
-                if (getStateTimeMs() > 8000) {
+                if (getStateTimeMs() > 8000 && mEnteredHomeIR) {
                     logToDebugWindow(mTAG, "Seeking home expired");
                     setState(State.WAITING_FOR_PICKUP);
                 }
@@ -1138,6 +1140,10 @@ public class GolfBallDeliveryActivity extends ImageRecActivity {
             case SEEKING_HOME:
                 sendWheelSpeed(0, 0);
                 // Actions handled in the loop function.
+                break;
+            case HOME_IMAGE_REC:
+                sendWheelSpeed(0,0);
+                mEnteredHomeIR = true;
                 break;
         }
         mState = newState;
