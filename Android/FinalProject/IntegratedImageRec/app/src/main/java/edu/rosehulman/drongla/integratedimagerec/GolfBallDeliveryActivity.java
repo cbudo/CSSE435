@@ -48,6 +48,7 @@ public class GolfBallDeliveryActivity extends ImageRecActivity {
     private boolean dropped1;
     private boolean dropped2;
     private boolean dropped3;
+    private int mDropCount;
     private int TURN_GAIN = 10;
 
     //**************** Calibration ****************
@@ -334,6 +335,7 @@ public class GolfBallDeliveryActivity extends ImageRecActivity {
         dropped1 = false;
         dropped2 = false;
         dropped3 = false;
+        mDropCount = 0;
         mNearBallLocation = 0;
         mFarBallLocation = 0;
         mWhiteBallLocation = 0;
@@ -405,7 +407,7 @@ public class GolfBallDeliveryActivity extends ImageRecActivity {
                 //exit state, lost cone
                 //Toast.makeText(GolfBallDeliveryActivity.this, "Cone = Lost", Toast.LENGTH_SHORT).show();
                 //logToDebugWindow(mTAG, "Lost cone");
-                if (mLastConeSize > 0.065){
+                if (mLastConeSize > 0.06){
                     logToDebugWindow(mTAG, "Exiting Image Rec - lost cone when near");
                     //Drop it early instead of circling
                     if (mState == State.NEAR_IMAGE_REC)
@@ -423,7 +425,7 @@ public class GolfBallDeliveryActivity extends ImageRecActivity {
             } else if (mConeLeftRightLocation > 0) {
                 //logToDebugWindow(mTAG, "Turn right some amount("+amount+")");
             }
-            if (mConeSize > 0.1) {
+            if (mConeSize > 0.075) {
                 //Why did I change this back? Rationale: if we lose the cone and we are have 0.065, we are dropping now. so we can try hard to hit the cone. 
                 logToDebugWindow(mTAG, "May want to stop - the cone is pretty big");
                 if (mState == State.NEAR_IMAGE_REC)
@@ -445,17 +447,24 @@ public class GolfBallDeliveryActivity extends ImageRecActivity {
                     setState(State.HOME_IMAGE_REC);
             }
         }
+        double distanceFromTarget = 999;
         switch (mState) {
             case READY_FOR_MISSION:
                 break;
             case DRIVE_TOWARDS_NEAR_BALL:
                 seekTargetAt(NEAR_BALL_GPS_X, mNearBallGpsY);
+                // distance to cone
+                distanceFromTarget = NavUtils.getDistance(mCurrentGpsX, mCurrentGpsY, NEAR_BALL_GPS_X, mNearBallGpsY);
+                if (distanceFromTarget <= 5) {
+                    setState(State.DROP_NEAR);
+                }
                 break;
             case NEAR_IMAGE_REC:
                 break;
             case DROP_NEAR:
-                if (!mRunningScript) {
+                if (!mRunningScript && mDropCount < 3) {
                     mRunningScript = true;
+                    mDropCount++;
                     Toast.makeText(GolfBallDeliveryActivity.this, "Knocking off " + mNearBallLocation, Toast.LENGTH_SHORT).show();
                     logToDebugWindow("DROP_FAR", "Knocking off "+mNearBallLocation);
 
@@ -463,7 +472,6 @@ public class GolfBallDeliveryActivity extends ImageRecActivity {
                     mCommandHandler.postDelayed(new Runnable() {
                         @Override
                         public void run() {
-                            mRunningScript = false;
                             setState(State.CHECK_DROPPED_NEAR);
                         }
                     }, 3500);
@@ -502,13 +510,18 @@ public class GolfBallDeliveryActivity extends ImageRecActivity {
                 }
                 break;
             case DRIVE_TOWARDS_FAR_BALL:
+                distanceFromTarget = NavUtils.getDistance(mCurrentGpsX, mCurrentGpsY, FAR_BALL_GPS_X, mFarBallGpsY);
+                if (distanceFromTarget <= 5) {
+                    setState(State.DROP_FAR);
+                }
                 seekTargetAt(FAR_BALL_GPS_X, mFarBallGpsY);
                 break;
             case FAR_IMAGE_REC:
                 break;
             case DROP_FAR:
-                if (!mRunningScript) {
+                if (!mRunningScript && mDropCount < 3) {
                     mRunningScript = true;
+                    mDropCount++;
                     Toast.makeText(GolfBallDeliveryActivity.this, "Knocking off " + mFarBallLocation, Toast.LENGTH_SHORT).show();
                     logToDebugWindow("DROP_FAR", "Knocking off "+mFarBallLocation);
                     mScripts.removeBallAtLocation(mFarBallLocation);
@@ -529,6 +542,7 @@ public class GolfBallDeliveryActivity extends ImageRecActivity {
                             setState(State.DROP_FAR);
                         else {
                             mFarBallLocation = -1;
+                            mDropCount = 0;
                             setState(State.DROP_WHITE);
                         }
                         break;
@@ -537,6 +551,7 @@ public class GolfBallDeliveryActivity extends ImageRecActivity {
                             setState(State.DROP_FAR);
                         else {
                             mFarBallLocation = -1;
+                            mDropCount = 0;
                             setState(State.DROP_WHITE);
                         }
                         break;
@@ -545,16 +560,19 @@ public class GolfBallDeliveryActivity extends ImageRecActivity {
                             setState(State.DROP_FAR);
                         else {
                             mFarBallLocation = -1;
+                            mDropCount = 0;
                             setState(State.DROP_WHITE);
                         }
                         break;
                     default:
+                        mDropCount = 0;
                         setState(State.DROP_WHITE);
                 }
                 break;
             case DROP_WHITE:
-                if (!mRunningScript) {
+                if (!mRunningScript && mDropCount < 3) {
                     mRunningScript = true;
+                    mDropCount++;
                     Toast.makeText(GolfBallDeliveryActivity.this, "Knocking off " + mWhiteBallLocation, Toast.LENGTH_SHORT).show();
                     logToDebugWindow("DROP_WHITE", "Knocking off "+mWhiteBallLocation);
                     mScripts.removeBallAtLocation(mWhiteBallLocation);
@@ -611,6 +629,10 @@ public class GolfBallDeliveryActivity extends ImageRecActivity {
             case SEEKING_HOME:
                 // check if in "IR BOX"
                 seekTargetAt(0, 0);
+                distanceFromTarget = NavUtils.getDistance(mCurrentGpsX, mCurrentGpsY, 0, 0);
+                if (distanceFromTarget <= 5) {
+                    setState(State.WAITING_FOR_PICKUP);
+                }
                 if (getStateTimeMs() > 8000 && mEnteredHomeIR) {
                     logToDebugWindow(mTAG, "Seeking home expired");
                     setState(State.WAITING_FOR_PICKUP);
@@ -1109,9 +1131,11 @@ public class GolfBallDeliveryActivity extends ImageRecActivity {
                 sendWheelSpeed(0, 0);
                 break;
             case CHECK_DROPPED_NEAR:
+                mRunningScript = false;
                 sendWheelSpeed(0, 0);
                 break;
             case DRIVE_TOWARDS_FAR_BALL:
+                mDropCount = 0;
                 // All actions handled in the loop function.
                 sendWheelSpeed(0, 0);
                 break;
@@ -1123,15 +1147,18 @@ public class GolfBallDeliveryActivity extends ImageRecActivity {
                 sendWheelSpeed(0, 0);
                 break;
             case CHECK_DROPPED_FAR:
+                mRunningScript = false;
                 sendWheelSpeed(0, 0);
                 break;
             case DROP_WHITE:
                 sendWheelSpeed(0, 0);
                 break;
             case CHECK_DROPPED_WHITE:
+                mRunningScript = false;
                 sendWheelSpeed(0, 0);
                 break;
             case DRIVE_TOWARDS_HOME:
+                mDropCount = 0;
                 sendWheelSpeed(0, 0);
                 // All actions handled in the loop function.
                 break;
