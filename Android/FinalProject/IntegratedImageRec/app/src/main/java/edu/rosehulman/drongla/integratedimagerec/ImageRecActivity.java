@@ -69,6 +69,8 @@ public class ImageRecActivity extends RobotActivity implements CameraBridgeViewB
     private ColorBlobDetector mDetector;
     private Scalar CONTOUR_COLOR = new Scalar(0, 0, 255, 255);
     private CameraBridgeViewBase mOpenCvCameraView;
+    private int mCameraId = 0;
+
 
     /** Records the latest boolean value for the cone found status.  True mean cone is visible. */
     protected boolean mConeFound;
@@ -83,7 +85,12 @@ public class ImageRecActivity extends RobotActivity implements CameraBridgeViewB
 
     protected ViewFlipper mViewFlipper;
 
-
+    public void swapCamera(View v){
+        mCameraId = mCameraId^1;
+        mOpenCvCameraView.disableView();
+        mOpenCvCameraView.setCameraIndex(mCameraId);
+        mOpenCvCameraView.enableView();
+    }
     private BaseLoaderCallback mLoaderCallback = new BaseLoaderCallback(this) {
         @Override
         public void onManagerConnected(int status) {
